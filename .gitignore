@@ -1,0 +1,42 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors & IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node / NPM / Composer Dependencies & Build Artifacts
+node_modules/
+vendor/
+dist/
+build/
+*.zip
+
+# Environment & Local Config
+.env
+.env.local
+*.local.php
+
+# PHPUnit / Testing & Coverage
+phpunit.xml
+.phpunit.result.cache
+coverage/
