@@ -1,10 +1,10 @@
 <?php
 /**
- * Uninstall WP-Login Guardian
+ * Uninstall Login Guardian
  *
  * Cleans up options and custom tables when the plugin is deleted.
  *
- * @package WP_Login_Guardian
+ * @package Login_Guardian
  */
 
 if (!defined('WP_UNINSTALL_PLUGIN')) {

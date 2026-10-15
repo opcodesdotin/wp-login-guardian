@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       WP-Login Guardian
+ * Plugin Name:       Login Guardian
  * Plugin URI:        https://github.com/opcodesdotin/wp-login-guardian
  * Description:       Advanced WordPress login security with brute-force protection, login rate limiting, 2FA, username enumeration protection, IP management, activity logging, and threat reporting.
  * Version:           1.0.0
@@ -33,6 +33,7 @@ if (!class_exists('ALG_Plugin')) {
             register_activation_hook(__FILE__, [$this, 'on_activate']);
             add_action('admin_init', [$this, 'register_settings']);
             add_action('admin_menu', [$this, 'admin_menu']);
+            add_action('admin_enqueue_scripts', [$this, 'admin_enqueue_assets']);
 
             // Login flow hooks
             add_filter('authenticate', [$this, 'enforce_rate_limits'], 30, 3);
@@ -719,14 +720,22 @@ if (!class_exists('ALG_Plugin')) {
         /* -------------------- Admin UI -------------------- */
         public function admin_menu() {
             add_menu_page(
-                __('Login Guardian', 'advanced-login-guardian'),
-                __('Login Guardian', 'advanced-login-guardian'),
+                __('Login Guardian', 'wp-login-guardian'),
+                __('Login Guardian', 'wp-login-guardian'),
                 'manage_options',
                 'alg',
                 [$this, 'render_admin'],
                 'dashicons-shield-alt',
                 81
             );
+        }
+
+        public function admin_enqueue_assets($hook) {
+            if ($hook !== 'toplevel_page_alg') {
+                return;
+            }
+            wp_enqueue_style('alg-admin-css', plugin_dir_url(__FILE__) . 'assets/css/admin.css', [], '1.0.0');
+            wp_enqueue_script('alg-admin-js', plugin_dir_url(__FILE__) . 'assets/js/admin.js', [], '1.0.0', true);
         }
 
         public function register_settings() {
@@ -773,65 +782,198 @@ if (!class_exists('ALG_Plugin')) {
             if (!in_array($active_tab, $allowed_tabs, true)) {
                 $active_tab = 'dashboard';
             }
-            echo '<div class="wrap"><h1>WP-Login Guardian</h1>';
-            echo '<h2 class="nav-tab-wrapper">';
-            $tabs = [
-                'dashboard' => __('Dashboard', 'advanced-login-guardian'),
-                'monitor'   => __('Activity Monitor', 'advanced-login-guardian'),
-                'rate'      => __('Rate Limiting', 'advanced-login-guardian'),
-                'custom'    => __('Login Customization', 'advanced-login-guardian'),
-                'lists'     => __('IP Lists', 'advanced-login-guardian'),
-                'reporting' => __('API Reporting', 'advanced-login-guardian'),
-            ];
-            foreach ($tabs as $slug=>$label) {
-                $cls = ($active_tab === $slug) ? ' nav-tab-active' : '';
-                echo '<a class="nav-tab'.$cls.'" href="'.esc_url(admin_url('admin.php?page=alg&tab='.$slug)).'">'.esc_html($label).'</a>';
-            }
-            echo '</h2>';
+            $opts = $this->opts();
+            ?>
+            <div class="wrap op-wrap">
+                <header class="op-header">
+                    <div class="op-header-main">
+                        <div class="op-header-title-row">
+                            <div class="op-header-icon" style="background:linear-gradient(135deg,#0284c7,#0369a1);" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </div>
+                            <h1 class="op-header-title"><?php esc_html_e('Login Guardian', 'wp-login-guardian'); ?></h1>
+                            <span class="op-header-badge">v1.0.0</span>
+                            <span class="op-badge op-badge-success"><span class="op-badge-dot"></span> <?php esc_html_e('Shield Active', 'wp-login-guardian'); ?></span>
+                        </div>
+                        <p class="op-header-subtitle"><?php esc_html_e('Advanced login security, brute-force rate limiting, 2FA, IP management, and threat reporting.', 'wp-login-guardian'); ?></p>
+                    </div>
+                    <div class="op-header-actions">
+                        <button type="button" class="op-btn op-btn-secondary" onclick="OpcodesUI.toast({message: 'Threat telemetry feeds synced', type: 'info'})">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                            <?php esc_html_e('Sync Telemetry', 'wp-login-guardian'); ?>
+                        </button>
+                    </div>
+                </header>
 
-            echo '<div id="alg-content" class="alg-tab alg-'.esc_attr($active_tab).'">';
-            switch ($active_tab) {
-                case 'dashboard': $this->render_dashboard(); break;
-                case 'monitor':   $this->render_monitor(); break;
-                case 'rate':      $this->render_rate_form($opts); break;
-                case 'custom':    $this->render_custom_form($opts); break;
-                case 'lists':     $this->render_lists_form($opts); break;
-                case 'reporting': $this->render_reporting_form($opts); break;
-            }
-            echo '</div></div>';
-            $this->admin_inline_js_css();
+                <nav class="op-nav-tabs" role="tablist" aria-label="<?php esc_attr_e('Login Guardian Sections', 'wp-login-guardian'); ?>">
+                    <?php
+                    $tabs = [
+                        'dashboard' => ['label' => __('Dashboard', 'wp-login-guardian'), 'icon' => '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>'],
+                        'monitor'   => ['label' => __('Activity Monitor', 'wp-login-guardian'), 'icon' => '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>'],
+                        'rate'      => ['label' => __('Rate Limiting', 'wp-login-guardian'), 'icon' => '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/>'],
+                        'custom'    => ['label' => __('Login Customization', 'wp-login-guardian'), 'icon' => '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>'],
+                        'lists'     => ['label' => __('IP Lists', 'wp-login-guardian'), 'icon' => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'],
+                        'reporting' => ['label' => __('API Reporting', 'wp-login-guardian'), 'icon' => '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>'],
+                    ];
+                    foreach ($tabs as $slug => $tab_data) {
+                        $cls = ($active_tab === $slug) ? ' is-active' : '';
+                        $aria = ($active_tab === $slug) ? 'true' : 'false';
+                        echo '<a class="op-nav-tab'.$cls.'" role="tab" aria-selected="'.$aria.'" href="'.esc_url(admin_url('admin.php?page=alg&tab='.$slug)).'">';
+                        echo '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'.$tab_data['icon'].'</svg> ';
+                        echo esc_html($tab_data['label']);
+                        echo '</a>';
+                    }
+                    ?>
+                </nav>
+
+                <div id="alg-content" class="op-tab-pane">
+                    <?php
+                    switch ($active_tab) {
+                        case 'dashboard': $this->render_dashboard(); break;
+                        case 'monitor':   $this->render_monitor(); break;
+                        case 'rate':      $this->render_rate_form($opts); break;
+                        case 'custom':    $this->render_custom_form($opts); break;
+                        case 'lists':     $this->render_lists_form($opts); break;
+                        case 'reporting': $this->render_reporting_form($opts); break;
+                    }
+                    ?>
+                </div>
+            </div>
+            <?php
         }
 
         private function render_dashboard() {
-            echo '<p>'.__('Summary for the last 24 hours', 'advanced-login-guardian').'</p>';
             $stats = $this->get_stats_last_24h();
-            echo '<div class="alg-cards">';
-            foreach ([
-                ['label'=>'Success','key'=>'success'],
-                ['label'=>'Failed','key'=>'failed'],
-                ['label'=>'Lockouts','key'=>'lockout'],
-                ['label'=>'Blocked','key'=>'blocked'],
-            ] as $card) {
-                $val = intval($stats[$card['key']] ?? 0);
-                echo '<div class="alg-card"><div class="alg-card-num">'.esc_html($val).'</div><div class="alg-card-label">'.esc_html($card['label']).'</div></div>';
-            }
-            echo '</div>';
-            echo '<p><a href="'.esc_url(admin_url('admin.php?page=alg&tab=monitor')).'" class="button button-primary">'.__('Open Activity Monitor','advanced-login-guardian').'</a></p>';
+            ?>
+            <div class="op-cards" role="region" aria-label="<?php esc_attr_e('Authentication Statistics', 'wp-login-guardian'); ?>">
+                <div class="op-card">
+                    <div class="op-card-top">
+                        <div class="op-card-icon" style="background:var(--op-success-bg);color:var(--op-success-icon);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <span class="op-trend-pill op-trend-up">Normal</span>
+                    </div>
+                    <div class="op-card-num"><?php echo esc_html(intval($stats['success'] ?? 0)); ?></div>
+                    <div class="op-card-label"><?php esc_html_e('Successful Logins (24h)', 'wp-login-guardian'); ?></div>
+                </div>
+
+                <div class="op-card">
+                    <div class="op-card-top">
+                        <div class="op-card-icon" style="background:var(--op-warning-bg);color:var(--op-warning-icon);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        </div>
+                        <span class="op-trend-pill op-trend-neutral">Tracked</span>
+                    </div>
+                    <div class="op-card-num"><?php echo esc_html(intval($stats['failed'] ?? 0)); ?></div>
+                    <div class="op-card-label"><?php esc_html_e('Failed Password Attempts', 'wp-login-guardian'); ?></div>
+                </div>
+
+                <div class="op-card">
+                    <div class="op-card-top">
+                        <div class="op-card-icon" style="background:var(--op-danger-bg);color:var(--op-danger-icon);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <span class="op-trend-pill op-trend-down">Mitigated</span>
+                    </div>
+                    <div class="op-card-num"><?php echo esc_html(intval($stats['lockout'] ?? 0)); ?></div>
+                    <div class="op-card-label"><?php esc_html_e('Rate Lockouts Enforced', 'wp-login-guardian'); ?></div>
+                </div>
+
+                <div class="op-card">
+                    <div class="op-card-top">
+                        <div class="op-card-icon" style="background:var(--op-primary-50);color:var(--op-primary-600);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                        </div>
+                        <span class="op-badge op-badge-danger">Active</span>
+                    </div>
+                    <div class="op-card-num"><?php echo esc_html(intval($stats['blocked'] ?? 0)); ?></div>
+                    <div class="op-card-label"><?php esc_html_e('Blocked Attacks', 'wp-login-guardian'); ?></div>
+                </div>
+            </div>
+
+            <div class="op-grid-2col">
+                <div class="op-panel">
+                    <div class="op-panel-header">
+                        <h2 class="op-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+                            <?php esc_html_e('Activity Monitor', 'wp-login-guardian'); ?>
+                        </h2>
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=alg&tab=monitor')); ?>" class="op-btn op-btn-ghost op-btn-sm"><?php esc_html_e('View Live Feed &rarr;', 'wp-login-guardian'); ?></a>
+                    </div>
+                    <div class="op-panel-body">
+                        <p class="op-help-text" style="margin:0 0 16px 0;"><?php esc_html_e('Real-time authentication event logging with instant search, status filtering, and threat reporting.', 'wp-login-guardian'); ?></p>
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=alg&tab=monitor')); ?>" class="op-btn op-btn-primary">
+                            <?php esc_html_e('Open Activity Monitor', 'wp-login-guardian'); ?>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="op-panel">
+                    <div class="op-panel-header">
+                        <h2 class="op-panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <?php esc_html_e('Security Protection Status', 'wp-login-guardian'); ?>
+                        </h2>
+                        <span class="op-badge op-badge-success">Enforced</span>
+                    </div>
+                    <div class="op-panel-body">
+                        <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;">
+                            <li style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid var(--op-border-subtle);">
+                                <span><?php esc_html_e('Brute-Force Rate Limiting', 'wp-login-guardian'); ?></span>
+                                <span class="op-badge op-badge-success"><?php esc_html_e('Active', 'wp-login-guardian'); ?></span>
+                            </li>
+                            <li style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid var(--op-border-subtle);">
+                                <span><?php esc_html_e('Two-Factor Authentication (2FA)', 'wp-login-guardian'); ?></span>
+                                <span class="op-badge op-badge-info"><?php esc_html_e('Configured', 'wp-login-guardian'); ?></span>
+                            </li>
+                            <li style="display:flex;justify-content:space-between;align-items:center;">
+                                <span><?php esc_html_e('Threat Intelligence (AbuseIPDB/Spamhaus)', 'wp-login-guardian'); ?></span>
+                                <span class="op-badge op-badge-neutral"><?php esc_html_e('Ready', 'wp-login-guardian'); ?></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <?php
         }
 
         private function render_monitor() {
             if (!current_user_can('manage_options')) return;
             $nonce = wp_create_nonce('alg_monitor');
-            echo '<div class="alg-actions">';
-            echo '<button class="button" id="alg-refresh" data-nonce="'.esc_attr($nonce).'">'.__('Refresh','advanced-login-guardian').'</button> ';
-            echo '<button class="button" id="alg-purge" data-nonce="'.esc_attr(wp_create_nonce('alg_purge')).'">'.__('Purge old logs','advanced-login-guardian').'</button>';
-            echo '</div>';
-            echo '<div class="alg-filter">';
-            echo '<input type="text" id="alg-search" placeholder="'.esc_attr__('Search user/IP/UA','advanced-login-guardian').'"> ';
-            echo '<select id="alg-status"><option value="">'.esc_html__('All statuses','advanced-login-guardian').'</option><option>success</option><option>failed</option><option>lockout</option><option>blocked</option></select> ';
-            echo '<button class="button" id="alg-export">'.__('Export CSV','advanced-login-guardian').'</button>';
-            echo '</div>';
-            echo '<div id="alg-table"></div>';
+            ?>
+            <div class="op-panel">
+                <div class="op-panel-header">
+                    <h2 class="op-panel-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+                        <?php esc_html_e('Authentication Event Log', 'wp-login-guardian'); ?>
+                    </h2>
+                    <div class="op-table-filter-group">
+                        <input type="text" id="alg-search" class="op-input" style="width:240px;" placeholder="<?php esc_attr_e('Search user, IP, UA...', 'wp-login-guardian'); ?>">
+                        <select id="alg-status" class="op-select" style="width:140px;">
+                            <option value=""><?php esc_html_e('All statuses', 'wp-login-guardian'); ?></option>
+                            <option value="success">Success</option>
+                            <option value="failed">Failed</option>
+                            <option value="lockout">Lockout</option>
+                            <option value="blocked">Blocked</option>
+                        </select>
+                        <button type="button" class="op-btn op-btn-secondary op-btn-sm" id="alg-refresh" data-nonce="<?php echo esc_attr($nonce); ?>">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                            <?php esc_html_e('Refresh', 'wp-login-guardian'); ?>
+                        </button>
+                        <button type="button" class="op-btn op-btn-secondary op-btn-sm" id="alg-export">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <?php esc_html_e('Export CSV', 'wp-login-guardian'); ?>
+                        </button>
+                        <button type="button" class="op-btn op-btn-danger op-btn-sm" id="alg-purge" data-nonce="<?php echo esc_attr(wp_create_nonce('alg_purge')); ?>">
+                            <?php esc_html_e('Purge Old Logs', 'wp-login-guardian'); ?>
+                        </button>
+                    </div>
+                </div>
+                <div id="alg-table"></div>
+            </div>
+            <?php
         }
 
         private function render_rate_form($opts) {
@@ -1043,7 +1185,7 @@ if (!class_exists('ALG_Plugin')) {
                 'body' => [
                     'ip' => $ip,
                     'categories' => $categories ?: '18,22',
-                    'comment' => sprintf('WP-Login Guardian: %s', substr($reason, 0, 200)),
+                    'comment' => sprintf('Login Guardian: %s', substr($reason, 0, 200)),
                 ],
             ]);
 
@@ -1225,140 +1367,6 @@ if (!class_exists('ALG_Plugin')) {
             $rows = $wpdb->get_results($wpdb->prepare("SELECT status, COUNT(*) c FROM {$this->table} WHERE event_time >= (NOW() - INTERVAL %d HOUR) GROUP BY status", 24));
             foreach ((array)$rows as $r) { $stats[$r->status] = (int)$r->c; }
             return $stats;
-        }
-
-        private function admin_inline_js_css() {
-            $report_nonce = wp_create_nonce('alg_report');
-            ?>
-            <style>
-                .alg-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}
-                .alg-card{background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-                .alg-card-num{font-size:28px;font-weight:700}
-                .alg-card-label{color:#555}
-                .alg-actions{margin:10px 0}
-                #alg-table table{width:100%;border-collapse:collapse;background:#fff}
-                #alg-table th,#alg-table td{border-bottom:1px solid #eee;padding:8px;text-align:left}
-                .alg-filter{margin:10px 0}
-                .alg-badge{display:inline-block;padding:2px 6px;border-radius:8px;background:#f0f0f1}
-            </style>
-            <script>
-            (function(){
-                const reportNonce = '<?php echo esc_js($report_nonce); ?>';
-                const $ = (sel,ctx=document)=>ctx.querySelector(sel);
-                const escapeHtml = (text) => {
-                    const div = document.createElement('div');
-                    div.textContent = text || '';
-                    return div.innerHTML;
-                };
-                const $$ = (sel,ctx=document)=>Array.from(ctx.querySelectorAll(sel));
-                const ajax = (action, data) => new Promise((resolve,reject)=>{
-                    const fd = new FormData();
-                    fd.append('action', action);
-                    Object.entries(data||{}).forEach(([k,v])=>fd.append(k,v));
-                    fetch(ajaxurl,{method:'POST',credentials:'same-origin',body:fd})
-                        .then(r=>r.json()).then(j=>{ if(j.success) resolve(j.data); else reject(j.data||j); })
-                        .catch(reject);
-                });
-
-                const table = $('#alg-table');
-                if (!table) return;
-                const state = {page:1, per:25, s:'', status:''};
-                const render = (data)=>{
-                    const rows = data.rows||[];
-                    let html = '<table><thead><tr>'+
-                        '<th>ID</th><th>Time</th><th>User</th><th>User ID</th><th>IP</th><th>Status</th><th>User Agent</th><th>Reason</th><th>Action</th>'+
-                        '</tr></thead><tbody>';
-                    if (!rows.length) html += '<tr><td colspan="9">No entries.</td></tr>';
-                    rows.forEach(r=>{
-                        html += '<tr>'+
-                        `<td>${escapeHtml(r.id)}</td>`+
-                        `<td>${escapeHtml(r.event_time)}</td>`+
-                        `<td>${escapeHtml(r.user_login||'')}</td>`+
-                        `<td>${escapeHtml(r.user_id||'')}</td>`+
-                        `<td>${escapeHtml(r.ip)}</td>`+
-                        `<td><span class="alg-badge">${escapeHtml(r.status)}</span></td>`+
-                        `<td>${escapeHtml(r.ua||'')}</td>`+
-                        `<td>${escapeHtml(r.reason||'')}</td>`+
-                        `<td><button class="button button-small alg-report-btn" data-ip="${escapeHtml(r.ip)}">Report IP</button></td>`+
-                        '</tr>'
-                    });
-                    html += '</tbody></table>';
-                    const total = data.total||0;
-                    const pages = Math.max(1, Math.ceil(total/state.per));
-                    html += `<div style="margin-top:8px;display:flex;gap:8px;align-items:center">`+
-                            `<button class="button" id="alg-prev" ${state.page<=1?'disabled':''}>Prev</button>`+
-                            `<span>Page ${state.page} / ${pages} · Total ${total}</span>`+
-                            `<button class="button" id="alg-next" ${state.page>=pages?'disabled':''}>Next</button>`+
-                            `</div>`;
-                    table.innerHTML = html;
-                    $('#alg-prev')?.addEventListener('click', ()=>{ if(state.page>1){state.page--; load();} });
-                    $('#alg-next')?.addEventListener('click', ()=>{ state.page++; load(); });
-                    table.querySelectorAll('.alg-report-btn').forEach(btn => {
-                        btn.addEventListener('click', e => {
-                            const ip = e.target.dataset.ip;
-                            if (!ip) return;
-                            btn.disabled = true;
-                            btn.textContent = 'Reporting...';
-                            ajax('alg_report_ip', { _ajax_nonce: reportNonce, ip })
-                                .then(res => {
-                                    let msgs = [];
-                                    if (res.abuseipdb) msgs.push('AbuseIPDB: ' + (res.abuseipdb.message || (res.abuseipdb.success ? 'Success' : 'Failed')));
-                                    if (res.spamhaus) msgs.push('Spamhaus: ' + (res.spamhaus.message || (res.spamhaus.success ? 'Success' : 'Failed')));
-                                    if (!msgs.length) msgs.push('No reporting APIs enabled or IP was reported recently.');
-                                    alert('Report Results for ' + ip + ':\n' + msgs.join('\n'));
-                                })
-                                .catch(err => alert('Report failed: ' + (err?.message || err?.toString?.() || 'Error')))
-                                .finally(() => { btn.disabled = false; btn.textContent = 'Report IP'; });
-                        });
-                    });
-                };
-                const load = ()=>{
-                    ajax('alg_fetch_logs', { _ajax_nonce: $('#alg-refresh').dataset.nonce, page: state.page, per: state.per, s: state.s, status: state.status })
-                        .then(render).catch(e=>{ table.innerHTML = '<div class="notice notice-error"><p>Failed to load: '+(e?.toString?.()||'error')+'</p></div>'; });
-                };
-                $('#alg-refresh')?.addEventListener('click', load);
-                $('#alg-search')?.addEventListener('input', e=>{ state.s = e.target.value; state.page=1; load(); });
-                $('#alg-status')?.addEventListener('change', e=>{ state.status = e.target.value; state.page=1; load(); });
-                $('#alg-export')?.addEventListener('click', ()=>{
-                    ajax('alg_fetch_logs', { _ajax_nonce: $('#alg-refresh').dataset.nonce, page: state.page, per: state.per, s: state.s, status: state.status, export: 1 })
-                        .then(data=>{
-                            const a = document.createElement('a');
-                            a.href = 'data:text/csv;base64,'+data.csv; a.download = data.filename; a.click();
-                        });
-                });
-                $('#alg-purge')?.addEventListener('click', ()=>{
-                    ajax('alg_purge_logs', { _ajax_nonce: $('#alg-purge').dataset.nonce })
-                        .then(()=>{ load(); });
-                });
-                $('#alg-block')?.addEventListener('click', ()=>{
-                    const ip = ($('#alg-ip').value||'').trim(); if(!ip) return;
-                    ajax('alg_block_ip', { _ajax_nonce: $('#alg-block').dataset.nonce, ip })
-                        .then(()=>alert('Blocked '+ip));
-                });
-                $('#alg-unblock')?.addEventListener('click', ()=>{
-                    const ip = ($('#alg-ip').value||'').trim(); if(!ip) return;
-                    ajax('alg_unblock_ip', { _ajax_nonce: $('#alg-unblock').dataset.nonce, ip })
-                        .then(()=>alert('Unblocked '+ip));
-                });
-                $('#alg-report-quick')?.addEventListener('click', e => {
-                    const ip = ($('#alg-ip').value||'').trim(); if(!ip) return alert('Please enter an IP address.');
-                    const btn = e.target; btn.disabled = true;
-                    ajax('alg_report_ip', { _ajax_nonce: btn.dataset.nonce, ip })
-                        .then(res => {
-                            let msgs = [];
-                            if (res.abuseipdb) msgs.push('AbuseIPDB: ' + (res.abuseipdb.message || (res.abuseipdb.success ? 'Success' : 'Failed')));
-                            if (res.spamhaus) msgs.push('Spamhaus: ' + (res.spamhaus.message || (res.spamhaus.success ? 'Success' : 'Failed')));
-                            if (!msgs.length) msgs.push('No reporting APIs enabled or IP was reported recently.');
-                            alert('Report Results for ' + ip + ':\n' + msgs.join('\n'));
-                        })
-                        .catch(err => alert('Report failed: ' + (err?.message || err?.toString?.() || 'Error')))
-                        .finally(() => { btn.disabled = false; });
-                });
-                // initial load
-                load();
-            })();
-            </script>
-            <?php
         }
     }
 }

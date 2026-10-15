@@ -1,0 +1,1305 @@
+/**
+ * Opcodes UI - Unified WordPress Plugin Admin Design System
+ * Version: 1.0.0
+ * Architecture: Zero-dependency Vanilla CSS Design System for WordPress Plugins
+ * Standards: WCAG 2.2 Level AA Compliant, Mobile-First Responsive, Light & Dark Theme Support
+ *
+ * @package Opcodes\UI
+ */
+
+/* ==========================================================================
+   1. Design Tokens (CSS Custom Properties)
+   ========================================================================== */
+
+:root {
+    /* Color Palette - Neutral / Surface */
+    --op-bg-app: #f0f2f5;
+    --op-bg-surface: #ffffff;
+    --op-bg-surface-elevated: #ffffff;
+    --op-bg-subtle: #f8fafc;
+    --op-bg-hover: #f1f5f9;
+    --op-bg-active: #e2e8f0;
+    
+    /* Borders & Dividers */
+    --op-border-subtle: #e2e8f0;
+    --op-border-base: #cbd5e1;
+    --op-border-strong: #94a3b8;
+    --op-border-focus: #3b82f6;
+
+    /* Text Colors */
+    --op-text-primary: #0f172a;
+    --op-text-secondary: #475569;
+    --op-text-muted: #64748b;
+    --op-text-subtle: #94a3b8;
+    --op-text-inverse: #ffffff;
+
+    /* Brand / Primary (Opcodes Indigo / WP Blue harmonious) */
+    --op-primary-50: #eff6ff;
+    --op-primary-100: #dbeafe;
+    --op-primary-200: #bfdbfe;
+    --op-primary-500: #2563eb;
+    --op-primary-600: #1d4ed8;
+    --op-primary-700: #1e40af;
+    --op-primary-contrast: #ffffff;
+
+    /* Semantic - Success (Emerald) */
+    --op-success-bg: #ecfdf5;
+    --op-success-border: #a7f3d0;
+    --op-success-text: #065f46;
+    --op-success-icon: #059669;
+
+    /* Semantic - Warning (Amber) */
+    --op-warning-bg: #fffbeb;
+    --op-warning-border: #fde68a;
+    --op-warning-text: #92400e;
+    --op-warning-icon: #d97706;
+
+    /* Semantic - Danger (Rose / Crimson) */
+    --op-danger-bg: #fef2f2;
+    --op-danger-border: #fecaca;
+    --op-danger-text: #991b1b;
+    --op-danger-icon: #dc2626;
+
+    /* Semantic - Info (Sky) */
+    --op-info-bg: #f0f9ff;
+    --op-info-border: #bae6fd;
+    --op-info-text: #075985;
+    --op-info-icon: #0284c7;
+
+    /* Typography */
+    --op-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    --op-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    
+    --op-font-xs: 0.75rem;     /* 12px */
+    --op-font-sm: 0.8125rem;   /* 13px */
+    --op-font-base: 0.875rem;  /* 14px (WordPress admin standard) */
+    --op-font-md: 0.9375rem;   /* 15px */
+    --op-font-lg: 1.0625rem;   /* 17px */
+    --op-font-xl: 1.25rem;     /* 20px */
+    --op-font-2xl: 1.5rem;     /* 24px */
+    --op-font-3xl: 2rem;       /* 32px */
+
+    /* Radii */
+    --op-radius-xs: 4px;
+    --op-radius-sm: 6px;
+    --op-radius-md: 8px;
+    --op-radius-lg: 12px;
+    --op-radius-xl: 16px;
+    --op-radius-full: 9999px;
+
+    /* Shadows & Elevations */
+    --op-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --op-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08);
+    --op-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+    --op-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    --op-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+    --op-shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.25);
+
+    /* Transitions */
+    --op-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --op-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --op-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   2. Dark Mode Overrides
+   ========================================================================== */
+
+[data-theme="dark"],
+body.op-theme-dark {
+    --op-bg-app: #0b0f17;
+    --op-bg-surface: #131b26;
+    --op-bg-surface-elevated: #1a2434;
+    --op-bg-subtle: #16202e;
+    --op-bg-hover: #1f2c3f;
+    --op-bg-active: #27384f;
+
+    --op-border-subtle: #202d3f;
+    --op-border-base: #2d3e56;
+    --op-border-strong: #475d7e;
+    --op-border-focus: #60a5fa;
+
+    --op-text-primary: #f8fafc;
+    --op-text-secondary: #cbd5e1;
+    --op-text-muted: #94a3b8;
+    --op-text-subtle: #64748b;
+    --op-text-inverse: #0f172a;
+
+    --op-primary-50: #172554;
+    --op-primary-100: #1e3a8a;
+    --op-primary-200: #1d4ed8;
+    --op-primary-500: #3b82f6;
+    --op-primary-600: #60a5fa;
+    --op-primary-700: #93c5fd;
+
+    --op-success-bg: #062b1f;
+    --op-success-border: #0d5e42;
+    --op-success-text: #6ee7b7;
+    --op-success-icon: #34d399;
+
+    --op-warning-bg: #2d1e02;
+    --op-warning-border: #633e07;
+    --op-warning-text: #fcd34d;
+    --op-warning-icon: #fbbf24;
+
+    --op-danger-bg: #320d0d;
+    --op-danger-border: #6f1c1c;
+    --op-danger-text: #fca5a5;
+    --op-danger-icon: #f87171;
+
+    --op-info-bg: #08283d;
+    --op-info-border: #0c517c;
+    --op-info-text: #7dd3fc;
+    --op-info-icon: #38bdf8;
+
+    --op-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --op-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    --op-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
+    --op-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
+    --op-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.85);
+    --op-shadow-focus: 0 0 0 3px rgba(96, 165, 250, 0.35);
+}
+
+/* ==========================================================================
+   3. Box-Sizing & Reset inside Opcodes Wrapper
+   ========================================================================== */
+
+.op-wrap,
+.op-wrap *,
+.op-wrap *::before,
+.op-wrap *::after {
+    box-sizing: border-box;
+}
+
+.op-wrap {
+    font-family: var(--op-font-sans);
+    font-size: var(--op-font-base);
+    line-height: 1.5;
+    color: var(--op-text-primary);
+    max-width: 1480px;
+    margin-inline: 0 auto;
+    padding-block: 16px 32px;
+    padding-inline: 4px;
+}
+
+/* Accessible focus visible utility */
+.op-wrap :focus-visible {
+    outline: 2px solid var(--op-primary-500);
+    outline-offset: 2px;
+}
+
+.op-sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* ==========================================================================
+   4. Header & Top Bar Component
+   ========================================================================== */
+
+.op-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-block-end: 20px;
+    padding-block-end: 18px;
+    border-block-end: 1px solid var(--op-border-subtle);
+}
+
+.op-header-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.op-header-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.op-header-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--op-radius-md);
+    background: linear-gradient(135deg, var(--op-primary-500), var(--op-primary-700));
+    color: var(--op-primary-contrast);
+    box-shadow: var(--op-shadow-sm);
+}
+
+.op-header-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.op-header-title {
+    margin: 0;
+    font-size: var(--op-font-2xl);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--op-text-primary);
+    line-height: 1.2;
+}
+
+.op-header-badge {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: 8px;
+    padding-block: 2px;
+    font-size: var(--op-font-xs);
+    font-weight: 600;
+    border-radius: var(--op-radius-sm);
+    background: var(--op-bg-subtle);
+    color: var(--op-text-muted);
+    border: 1px solid var(--op-border-subtle);
+}
+
+.op-header-subtitle {
+    margin: 0;
+    font-size: var(--op-font-base);
+    color: var(--op-text-muted);
+}
+
+.op-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   5. Navigation Tabs
+   ========================================================================== */
+
+.op-nav-tabs {
+    display: flex;
+    gap: 4px;
+    border-block-end: 1px solid var(--op-border-base);
+    margin-block-end: 24px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-inline-start: 2px;
+}
+
+.op-nav-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding-block: 10px 12px;
+    padding-inline: 16px;
+    font-size: var(--op-font-base);
+    font-weight: 500;
+    color: var(--op-text-secondary);
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    border-block-end: 2px solid transparent;
+    cursor: pointer;
+    transition: color var(--op-transition-fast), border-color var(--op-transition-fast), background-color var(--op-transition-fast);
+    white-space: nowrap;
+    border-start-start-radius: var(--op-radius-sm);
+    border-start-end-radius: var(--op-radius-sm);
+}
+
+.op-nav-tab:hover {
+    color: var(--op-text-primary);
+    background: var(--op-bg-hover);
+}
+
+.op-nav-tab.is-active,
+.op-nav-tab[aria-selected="true"] {
+    color: var(--op-primary-500);
+    border-block-end-color: var(--op-primary-500);
+    font-weight: 600;
+    background: var(--op-bg-surface);
+}
+
+.op-nav-tab-badge {
+    padding-inline: 6px;
+    padding-block: 1px;
+    font-size: var(--op-font-xs);
+    font-weight: 600;
+    border-radius: var(--op-radius-full);
+    background: var(--op-bg-hover);
+    color: var(--op-text-muted);
+}
+
+.op-nav-tab.is-active .op-nav-tab-badge {
+    background: var(--op-primary-50);
+    color: var(--op-primary-600);
+}
+
+.op-tab-content {
+    display: none;
+}
+
+.op-tab-content.is-active {
+    display: block;
+    animation: opFadeIn var(--op-transition-base);
+}
+
+@keyframes opFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   6. Stat Metric Cards
+   ========================================================================== */
+
+.op-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-block-end: 24px;
+}
+
+.op-card {
+    background: var(--op-bg-surface);
+    border: 1px solid var(--op-border-subtle);
+    border-radius: var(--op-radius-lg);
+    padding: 18px 20px;
+    box-shadow: var(--op-shadow-sm);
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--op-transition-fast), box-shadow var(--op-transition-fast);
+}
+
+.op-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--op-shadow-md);
+    border-color: var(--op-border-base);
+}
+
+.op-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-block-end: 10px;
+}
+
+.op-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--op-radius-md);
+    background: var(--op-bg-subtle);
+    color: var(--op-primary-500);
+}
+
+.op-card-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.op-card-num {
+    font-size: var(--op-font-3xl);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--op-text-primary);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.op-card-unit {
+    font-size: var(--op-font-base);
+    font-weight: 500;
+    color: var(--op-text-muted);
+}
+
+.op-card-label {
+    font-size: var(--op-font-sm);
+    font-weight: 500;
+    color: var(--op-text-secondary);
+    margin-block-start: 6px;
+}
+
+.op-trend-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding-inline: 6px;
+    padding-block: 2px;
+    font-size: var(--op-font-xs);
+    font-weight: 600;
+    border-radius: var(--op-radius-full);
+}
+
+.op-trend-up {
+    background: var(--op-success-bg);
+    color: var(--op-success-text);
+}
+
+.op-trend-down {
+    background: var(--op-danger-bg);
+    color: var(--op-danger-text);
+}
+
+.op-trend-neutral {
+    background: var(--op-bg-hover);
+    color: var(--op-text-muted);
+}
+
+/* ==========================================================================
+   7. Panels, Containers & Grids
+   ========================================================================== */
+
+.op-grid-2col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 20px;
+    margin-block-end: 24px;
+}
+
+.op-grid-3col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-block-end: 24px;
+}
+
+.op-panel {
+    background: var(--op-bg-surface);
+    border: 1px solid var(--op-border-subtle);
+    border-radius: var(--op-radius-lg);
+    box-shadow: var(--op-shadow-sm);
+    margin-block-end: 24px;
+    overflow: hidden;
+}
+
+.op-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-block: 16px;
+    padding-inline: 20px;
+    border-block-end: 1px solid var(--op-border-subtle);
+    background: var(--op-bg-surface);
+}
+
+.op-panel-title-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.op-panel-title {
+    margin: 0;
+    font-size: var(--op-font-lg);
+    font-weight: 600;
+    color: var(--op-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.op-panel-title svg {
+    width: 18px;
+    height: 18px;
+    color: var(--op-primary-500);
+}
+
+.op-panel-body {
+    padding: 20px;
+}
+
+.op-panel-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 14px;
+    padding-inline: 20px;
+    background: var(--op-bg-subtle);
+    border-block-start: 1px solid var(--op-border-subtle);
+}
+
+/* ==========================================================================
+   8. Buttons
+   ========================================================================== */
+
+.op-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-block: 8px;
+    padding-inline: 14px;
+    font-family: inherit;
+    font-size: var(--op-font-base);
+    font-weight: 500;
+    line-height: 1.25;
+    border-radius: var(--op-radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color var(--op-transition-fast), border-color var(--op-transition-fast), box-shadow var(--op-transition-fast), transform var(--op-transition-fast);
+}
+
+.op-btn:active {
+    transform: translateY(1px);
+}
+
+.op-btn-primary {
+    background: var(--op-primary-500);
+    border-color: var(--op-primary-600);
+    color: var(--op-primary-contrast);
+    box-shadow: var(--op-shadow-xs);
+}
+
+.op-btn-primary:hover {
+    background: var(--op-primary-600);
+    border-color: var(--op-primary-700);
+    color: var(--op-primary-contrast);
+}
+
+.op-btn-secondary {
+    background: var(--op-bg-surface);
+    border-color: var(--op-border-base);
+    color: var(--op-text-primary);
+    box-shadow: var(--op-shadow-xs);
+}
+
+.op-btn-secondary:hover {
+    background: var(--op-bg-hover);
+    border-color: var(--op-border-strong);
+    color: var(--op-text-primary);
+}
+
+.op-btn-danger {
+    background: var(--op-danger-icon);
+    border-color: #b91c1c;
+    color: #ffffff;
+}
+
+.op-btn-danger:hover {
+    background: #b91c1c;
+}
+
+.op-btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--op-text-secondary);
+}
+
+.op-btn-ghost:hover {
+    background: var(--op-bg-hover);
+    color: var(--op-text-primary);
+}
+
+.op-btn-sm {
+    padding-block: 5px;
+    padding-inline: 10px;
+    font-size: var(--op-font-sm);
+    border-radius: var(--op-radius-sm);
+}
+
+.op-btn-lg {
+    padding-block: 12px;
+    padding-inline: 20px;
+    font-size: var(--op-font-lg);
+    border-radius: var(--op-radius-lg);
+}
+
+.op-btn-icon-only {
+    padding: 8px;
+    border-radius: var(--op-radius-md);
+}
+
+.op-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   9. Tables & Data Grids
+   ========================================================================== */
+
+.op-table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.op-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--op-font-base);
+    text-align: start;
+}
+
+.op-table th {
+    padding-block: 12px;
+    padding-inline: 16px;
+    background: var(--op-bg-subtle);
+    color: var(--op-text-secondary);
+    font-weight: 600;
+    font-size: var(--op-font-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-block-end: 1px solid var(--op-border-subtle);
+    white-space: nowrap;
+}
+
+.op-table td {
+    padding-block: 12px;
+    padding-inline: 16px;
+    color: var(--op-text-primary);
+    border-block-end: 1px solid var(--op-border-subtle);
+    vertical-align: middle;
+}
+
+.op-table tbody tr {
+    transition: background-color var(--op-transition-fast);
+}
+
+.op-table tbody tr:hover {
+    background-color: var(--op-bg-hover);
+}
+
+.op-table-striped tbody tr:nth-child(even) {
+    background-color: var(--op-bg-subtle);
+}
+
+.op-table-striped tbody tr:nth-child(even):hover {
+    background-color: var(--op-bg-hover);
+}
+
+.op-table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-block-end: 16px;
+}
+
+.op-table-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   10. Form Controls & Settings
+   ========================================================================== */
+
+.op-form-group {
+    margin-block-end: 20px;
+}
+
+.op-label {
+    display: block;
+    font-weight: 600;
+    font-size: var(--op-font-base);
+    color: var(--op-text-primary);
+    margin-block-end: 6px;
+}
+
+.op-help-text {
+    font-size: var(--op-font-sm);
+    color: var(--op-text-muted);
+    margin-block-start: 5px;
+}
+
+.op-input,
+.op-select,
+.op-textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: var(--op-font-base);
+    color: var(--op-text-primary);
+    background: var(--op-bg-surface);
+    border: 1px solid var(--op-border-base);
+    border-radius: var(--op-radius-md);
+    padding-block: 8px;
+    padding-inline: 12px;
+    box-shadow: var(--op-shadow-xs);
+    transition: border-color var(--op-transition-fast), box-shadow var(--op-transition-fast);
+}
+
+.op-input:focus,
+.op-select:focus,
+.op-textarea:focus {
+    border-color: var(--op-border-focus);
+    box-shadow: var(--op-shadow-focus);
+    outline: none;
+}
+
+.op-input:user-invalid,
+.op-input.is-invalid {
+    border-color: var(--op-danger-icon);
+}
+
+.op-input-group {
+    display: flex;
+    align-items: stretch;
+    border-radius: var(--op-radius-md);
+    box-shadow: var(--op-shadow-xs);
+}
+
+.op-input-addon {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: 12px;
+    background: var(--op-bg-subtle);
+    color: var(--op-text-muted);
+    border: 1px solid var(--op-border-base);
+    font-size: var(--op-font-sm);
+}
+
+.op-input-group .op-input-addon:first-child {
+    border-inline-end: none;
+    border-start-start-radius: var(--op-radius-md);
+    border-end-start-radius: var(--op-radius-md);
+}
+
+.op-input-group .op-input-addon:last-child {
+    border-inline-start: none;
+    border-start-end-radius: var(--op-radius-md);
+    border-end-end-radius: var(--op-radius-md);
+}
+
+.op-input-group .op-input {
+    border-radius: 0;
+}
+
+.op-input-group .op-input:first-child {
+    border-start-start-radius: var(--op-radius-md);
+    border-end-start-radius: var(--op-radius-md);
+}
+
+.op-input-group .op-input:last-child {
+    border-start-end-radius: var(--op-radius-md);
+    border-end-end-radius: var(--op-radius-md);
+}
+
+/* Accessible Toggle Switch */
+.op-switch-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.op-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.op-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.op-switch-slider {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background-color: var(--op-border-strong);
+    border-radius: var(--op-radius-full);
+    transition: var(--op-transition-fast);
+}
+
+.op-switch-slider::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    inset-inline-start: 3px;
+    inset-block-end: 3px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: var(--op-transition-fast);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.op-switch input:checked + .op-switch-slider {
+    background-color: var(--op-primary-500);
+}
+
+.op-switch input:checked + .op-switch-slider::before {
+    transform: translateX(20px);
+}
+
+.op-switch input:focus-visible + .op-switch-slider {
+    box-shadow: var(--op-shadow-focus);
+}
+
+/* Settings Form Grid (WordPress 2-column pattern) */
+.op-settings-row {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    padding-block: 20px;
+    border-block-end: 1px solid var(--op-border-subtle);
+}
+
+@media (max-width: 768px) {
+    .op-settings-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+.op-settings-label-col {
+    font-size: var(--op-font-base);
+}
+
+.op-settings-label {
+    font-weight: 600;
+    color: var(--op-text-primary);
+    margin-block-end: 4px;
+    display: block;
+}
+
+/* ==========================================================================
+   11. Status Badges & Pills
+   ========================================================================== */
+
+.op-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding-inline: 8px;
+    padding-block: 3px;
+    font-size: var(--op-font-xs);
+    font-weight: 600;
+    border-radius: var(--op-radius-full);
+    line-height: 1.2;
+}
+
+.op-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.op-badge-success {
+    background: var(--op-success-bg);
+    color: var(--op-success-text);
+    border: 1px solid var(--op-success-border);
+}
+.op-badge-success .op-badge-dot { background: var(--op-success-icon); }
+
+.op-badge-warning {
+    background: var(--op-warning-bg);
+    color: var(--op-warning-text);
+    border: 1px solid var(--op-warning-border);
+}
+.op-badge-warning .op-badge-dot { background: var(--op-warning-icon); }
+
+.op-badge-danger {
+    background: var(--op-danger-bg);
+    color: var(--op-danger-text);
+    border: 1px solid var(--op-danger-border);
+}
+.op-badge-danger .op-badge-dot { background: var(--op-danger-icon); }
+
+.op-badge-info {
+    background: var(--op-info-bg);
+    color: var(--op-info-text);
+    border: 1px solid var(--op-info-border);
+}
+.op-badge-info .op-badge-dot { background: var(--op-info-icon); }
+
+.op-badge-neutral {
+    background: var(--op-bg-hover);
+    color: var(--op-text-secondary);
+    border: 1px solid var(--op-border-subtle);
+}
+.op-badge-neutral .op-badge-dot { background: var(--op-text-muted); }
+
+/* ==========================================================================
+   12. Alerts & Banners
+   ========================================================================== */
+
+.op-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: var(--op-radius-md);
+    margin-block-end: 18px;
+    border-inline-start: 4px solid transparent;
+    font-size: var(--op-font-base);
+}
+
+.op-alert-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-block-start: 1px;
+}
+
+.op-alert-content {
+    flex: 1;
+}
+
+.op-alert-title {
+    font-weight: 600;
+    margin-block-end: 2px;
+}
+
+.op-alert-close {
+    background: transparent;
+    border: none;
+    color: inherit;
+    opacity: 0.6;
+    cursor: pointer;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.op-alert-close:hover {
+    opacity: 1;
+}
+
+.op-alert-success {
+    background: var(--op-success-bg);
+    border-color: var(--op-success-icon);
+    color: var(--op-success-text);
+}
+
+.op-alert-warning {
+    background: var(--op-warning-bg);
+    border-color: var(--op-warning-icon);
+    color: var(--op-warning-text);
+}
+
+.op-alert-danger {
+    background: var(--op-danger-bg);
+    border-color: var(--op-danger-icon);
+    color: var(--op-danger-text);
+}
+
+.op-alert-info {
+    background: var(--op-info-bg);
+    border-color: var(--op-info-icon);
+    color: var(--op-info-text);
+}
+
+/* ==========================================================================
+   13. Native HTML Dialog (Modal)
+   ========================================================================== */
+
+.op-dialog {
+    border: none;
+    border-radius: var(--op-radius-xl);
+    padding: 0;
+    background: var(--op-bg-surface-elevated);
+    color: var(--op-text-primary);
+    box-shadow: var(--op-shadow-xl);
+    max-width: 580px;
+    width: 90vw;
+    animation: opModalIn var(--op-transition-base);
+}
+
+.op-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    animation: opBackdropFade var(--op-transition-base);
+}
+
+@keyframes opModalIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes opBackdropFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.op-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 18px;
+    padding-inline: 24px;
+    border-block-end: 1px solid var(--op-border-subtle);
+}
+
+.op-dialog-title {
+    margin: 0;
+    font-size: var(--op-font-xl);
+    font-weight: 600;
+}
+
+.op-dialog-body {
+    padding: 24px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.op-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding-block: 16px;
+    padding-inline: 24px;
+    background: var(--op-bg-subtle);
+    border-block-start: 1px solid var(--op-border-subtle);
+}
+
+/* ==========================================================================
+   14. Activity Timeline
+   ========================================================================== */
+
+.op-timeline {
+    position: relative;
+    padding-inline-start: 32px;
+}
+
+.op-timeline::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 11px;
+    inset-block: 0;
+    width: 2px;
+    background: var(--op-border-subtle);
+}
+
+.op-timeline-item {
+    position: relative;
+    margin-block-end: 20px;
+}
+
+.op-timeline-item:last-child {
+    margin-block-end: 0;
+}
+
+.op-timeline-node {
+    position: absolute;
+    inset-inline-start: -32px;
+    inset-block-start: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--op-bg-surface);
+    border: 2px solid var(--op-primary-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--op-primary-500);
+    box-shadow: 0 0 0 3px var(--op-bg-surface);
+}
+
+.op-timeline-node svg {
+    width: 12px;
+    height: 12px;
+}
+
+.op-timeline-title {
+    font-weight: 600;
+    font-size: var(--op-font-base);
+    color: var(--op-text-primary);
+}
+
+.op-timeline-meta {
+    font-size: var(--op-font-xs);
+    color: var(--op-text-muted);
+    margin-block-start: 2px;
+}
+
+.op-timeline-desc {
+    font-size: var(--op-font-sm);
+    color: var(--op-text-secondary);
+    margin-block-start: 4px;
+}
+
+/* ==========================================================================
+   15. Empty States
+   ========================================================================== */
+
+.op-empty-state {
+    text-align: center;
+    padding: 48px 20px;
+}
+
+.op-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--op-bg-subtle);
+    color: var(--op-text-muted);
+    margin-block-end: 16px;
+}
+
+.op-empty-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.op-empty-title {
+    font-size: var(--op-font-xl);
+    font-weight: 600;
+    color: var(--op-text-primary);
+    margin-block-end: 6px;
+}
+
+.op-empty-desc {
+    font-size: var(--op-font-base);
+    color: var(--op-text-muted);
+    max-width: 440px;
+    margin-inline: auto;
+    margin-block-end: 20px;
+}
+
+/* ==========================================================================
+   16. Progress & Gauge Meters
+   ========================================================================== */
+
+.op-progress {
+    width: 100%;
+    height: 8px;
+    background: var(--op-bg-active);
+    border-radius: var(--op-radius-full);
+    overflow: hidden;
+}
+
+.op-progress-bar {
+    height: 100%;
+    background: var(--op-primary-500);
+    border-radius: var(--op-radius-full);
+    transition: width var(--op-transition-base);
+}
+
+.op-progress-bar-success { background: var(--op-success-icon); }
+.op-progress-bar-warning { background: var(--op-warning-icon); }
+.op-progress-bar-danger  { background: var(--op-danger-icon); }
+
+/* Circular Score Gauge */
+.op-score-ring {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.op-score-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.op-score-ring circle {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+}
+
+.op-score-bg {
+    stroke: var(--op-border-subtle);
+}
+
+.op-score-fill {
+    stroke: var(--op-success-icon);
+    transition: stroke-dashoffset 0.8s ease-in-out;
+}
+
+.op-score-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: var(--op-font-2xl);
+    color: var(--op-text-primary);
+}
+
+.op-score-label {
+    font-size: var(--op-font-xs);
+    font-weight: 500;
+    color: var(--op-text-muted);
+}
+
+/* ==========================================================================
+   17. Toast Notifications
+   ========================================================================== */
+
+.op-toast-container {
+    position: fixed;
+    inset-block-end: 24px;
+    inset-inline-end: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 99999;
+    pointer-events: none;
+}
+
+.op-toast {
+    pointer-events: auto;
+    background: var(--op-bg-surface-elevated);
+    color: var(--op-text-primary);
+    border: 1px solid var(--op-border-base);
+    border-radius: var(--op-radius-md);
+    padding: 12px 16px;
+    box-shadow: var(--op-shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--op-font-base);
+    min-width: 280px;
+    animation: opToastIn 0.25s ease-out;
+}
+
+@keyframes opToastIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.op-toast-success { border-inline-start: 4px solid var(--op-success-icon); }
+.op-toast-danger  { border-inline-start: 4px solid var(--op-danger-icon); }
+.op-toast-info    { border-inline-start: 4px solid var(--op-info-icon); }
+
+/* Sticky Save / Actions Bar */
+.op-sticky-bar {
+    position: sticky;
+    inset-block-end: 20px;
+    z-index: 100;
+    background: var(--op-bg-surface);
+    border: 1px solid var(--op-border-strong);
+    border-radius: var(--op-radius-lg);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--op-shadow-lg);
+    margin-block-start: 24px;
+}

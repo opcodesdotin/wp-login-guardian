@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="assets/banner-772x250.png" alt="WP-Login Guardian Banner" width="100%">
+  <img src="assets/banner-772x250.png" alt="Login Guardian Banner" width="100%">
 </p>
 
-# WP-Login Guardian
+# Login Guardian
 
-🛡️ **WP-Login Guardian** is an advanced WordPress security plugin that protects your website from brute-force attacks, unauthorized login attempts, username enumeration, and malicious IPs. It combines login protection, two-factor authentication (2FA), activity monitoring, IP management, and threat intelligence into one lightweight security solution.
+🛡️ **Login Guardian** is an advanced WordPress security plugin that protects your website from brute-force attacks, unauthorized login attempts, username enumeration, and malicious IPs. It combines login protection, two-factor authentication (2FA), activity monitoring, IP management, and threat intelligence into one lightweight security solution.
 
 ---
 
@@ -31,7 +31,7 @@ wp-content/plugins/
 ```
 
 3. Activate the plugin from **Plugins** in your WordPress dashboard.
-4. Configure **WP-Login Guardian** from the WordPress Admin menu.
+4. Configure **Login Guardian** from the WordPress Admin menu.
 
 ---
 
