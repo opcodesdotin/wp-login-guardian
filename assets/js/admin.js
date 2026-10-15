@@ -17,6 +17,8 @@
             this.initPasswordToggles();
             this.initTableFilters();
             this.initActivityMonitor();
+            this.initQuickActions();
+            this.initColorPickers();
         },
 
         initTabs() {
@@ -363,6 +365,129 @@
 
             // Initial load
             load();
+        },
+
+        /**
+         * Quick IP Block / Unblock / Report AJAX Controller
+         */
+        initQuickActions() {
+            const ipInput = document.getElementById('alg-ip');
+            const blockBtn = document.getElementById('alg-block');
+            const unblockBtn = document.getElementById('alg-unblock');
+            const reportBtn = document.getElementById('alg-report-quick');
+
+            if (!ipInput) return;
+
+            const ajaxEndpoint = window.alg_ajax?.ajax_url || '/wp-admin/admin-ajax.php';
+            const callAjax = (action, nonce, ip, extra = {}) => {
+                const body = new URLSearchParams({
+                    action: action,
+                    _ajax_nonce: nonce,
+                    ip: ip,
+                    ...extra
+                });
+                return fetch(ajaxEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: body.toString()
+                }).then(r => r.json()).then(data => {
+                    if (!data.success) throw new Error(data.data || 'Action failed');
+                    return data.data;
+                });
+            };
+
+            blockBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                const ip = ipInput.value.trim();
+                if (!ip) {
+                    this.toast({ message: 'Please specify an IP address to block.', type: 'danger' });
+                    ipInput.focus();
+                    return;
+                }
+                blockBtn.disabled = true;
+                callAjax('alg_block_ip', blockBtn.dataset.nonce, ip)
+                    .then(data => {
+                        this.toast({ message: `IP ${data.blocked} added to blacklist`, type: 'success' });
+                        const blacklistEl = document.getElementById('blacklist_ips');
+                        if (blacklistEl) {
+                            const cur = blacklistEl.value.trim();
+                            blacklistEl.value = cur ? cur + '\n' + data.blocked : data.blocked;
+                        }
+                    })
+                    .catch(err => {
+                        this.toast({ message: err.message || 'Failed to block IP', type: 'danger' });
+                    })
+                    .finally(() => {
+                        blockBtn.disabled = false;
+                    });
+            });
+
+            unblockBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                const ip = ipInput.value.trim();
+                if (!ip) {
+                    this.toast({ message: 'Please specify an IP address to unblock.', type: 'danger' });
+                    ipInput.focus();
+                    return;
+                }
+                unblockBtn.disabled = true;
+                callAjax('alg_unblock_ip', unblockBtn.dataset.nonce, ip)
+                    .then(data => {
+                        this.toast({ message: `IP ${data.unblocked} removed from blacklist`, type: 'success' });
+                        const blacklistEl = document.getElementById('blacklist_ips');
+                        if (blacklistEl) {
+                            const lines = blacklistEl.value.split('\n').map(l => l.trim()).filter(l => l && l !== data.unblocked);
+                            blacklistEl.value = lines.join('\n');
+                        }
+                    })
+                    .catch(err => {
+                        this.toast({ message: err.message || 'Failed to unblock IP', type: 'danger' });
+                    })
+                    .finally(() => {
+                        unblockBtn.disabled = false;
+                    });
+            });
+
+            reportBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                const ip = ipInput.value.trim();
+                if (!ip) {
+                    this.toast({ message: 'Please specify an IP address to report.', type: 'danger' });
+                    ipInput.focus();
+                    return;
+                }
+                reportBtn.disabled = true;
+                callAjax('alg_report_ip', reportBtn.dataset.nonce, ip)
+                    .then(() => {
+                        this.toast({ message: `Threat report for ${ip} dispatched`, type: 'success' });
+                    })
+                    .catch(err => {
+                        this.toast({ message: err.message || 'Failed to report IP', type: 'danger' });
+                    })
+                    .finally(() => {
+                        reportBtn.disabled = false;
+                    });
+            });
+        },
+
+        /**
+         * Two-way sync for color pickers and hex text inputs
+         */
+        initColorPickers() {
+            document.querySelectorAll('[data-color-sync]').forEach(colorInput => {
+                const targetSelector = colorInput.getAttribute('data-color-sync');
+                const textInput = document.querySelector(targetSelector);
+                if (!textInput) return;
+
+                colorInput.addEventListener('input', () => {
+                    textInput.value = colorInput.value;
+                });
+                textInput.addEventListener('input', () => {
+                    if (/^#[0-9a-fA-F]{6}$/.test(textInput.value)) {
+                        colorInput.value = textInput.value;
+                    }
+                });
+            });
         }
     };
 

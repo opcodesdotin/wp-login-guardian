@@ -327,14 +327,14 @@ if (!class_exists('ALG_Plugin')) {
             // Blacklist hard block
             if ($this->ip_in_list($ip, $opts['blacklist_ips'])) {
                 $this->log_event(null, $username, $ip, 'blocked', 'Blacklisted IP');
-                return new WP_Error('alg_blocked', __('Your IP is blocked.', 'advanced-login-guardian'));
+                return new WP_Error('alg_blocked', __('Your IP is blocked.', 'wp-login-guardian'));
             }
 
             $lock_key = $this->transient_key('lock_ip', $ip);
             $lock_until = get_transient($lock_key);
             if ($lock_until) {
                 $remaining = intval($lock_until - time());
-                $msg = sprintf(__('Too many attempts. Try again in %s seconds.', 'advanced-login-guardian'), max(1,$remaining));
+                $msg = sprintf(__('Too many attempts. Try again in %s seconds.', 'wp-login-guardian'), max(1,$remaining));
                 $this->log_event(null, $username, $ip, 'lockout', 'Locked by rate limit');
                 return new WP_Error('alg_rate_limited', $msg);
             }
@@ -347,7 +347,7 @@ if (!class_exists('ALG_Plugin')) {
                 if (!empty($opts['notify_on_lockout'])) { $this->notify_lockout($ip, $attempts); }
                 if (!empty($opts['auto_report_on_lockout'])) { $this->trigger_auto_report($ip, 'Rate limit threshold exceeded'); }
                 $this->log_event(null, $username, $ip, 'lockout', 'Hit max attempts');
-                return new WP_Error('alg_rate_limited', __('Too many attempts. You have been temporarily locked out.', 'advanced-login-guardian'));
+                return new WP_Error('alg_rate_limited', __('Too many attempts. You have been temporarily locked out.', 'wp-login-guardian'));
             }
 
             return $user; // allow WP to proceed
@@ -487,11 +487,11 @@ if (!class_exists('ALG_Plugin')) {
                 .alg-2fa-remember { margin: 12px 0; font-size: 13px; }
             </style>
             <?php if (isset($_GET['alg_error'])): ?>
-                <div class="error"><p><?php _e('Invalid verification code. Please try again.', 'advanced-login-guardian'); ?></p></div>
+                <div class="error"><p><?php _e('Invalid verification code. Please try again.', 'wp-login-guardian'); ?></p></div>
             <?php endif; ?>
             <div class="alg-2fa-wrap">
-                <h2><?php _e('Two-Factor Authentication', 'advanced-login-guardian'); ?></h2>
-                <p><?php printf(__('Enter the 6-digit code from your authenticator app for <strong>%s</strong>.', 'advanced-login-guardian'), esc_html($user->user_login)); ?></p>
+                <h2><?php _e('Two-Factor Authentication', 'wp-login-guardian'); ?></h2>
+                <p><?php printf(__('Enter the 6-digit code from your authenticator app for <strong>%s</strong>.', 'wp-login-guardian'), esc_html($user->user_login)); ?></p>
                 <form method="post" action="<?php echo esc_url(add_query_arg(['action' => 'alg_2fa_verify'], wp_login_url())); ?>">
                     <input type="hidden" name="alg_token" value="<?php echo esc_attr($token); ?>">
                     <p>
@@ -500,21 +500,21 @@ if (!class_exists('ALG_Plugin')) {
                     <p class="alg-2fa-remember">
                         <label>
                             <input type="checkbox" name="alg_remember" value="1">
-                            <?php _e('Remember this device for 30 days', 'advanced-login-guardian'); ?>
+                            <?php _e('Remember this device for 30 days', 'wp-login-guardian'); ?>
                         </label>
                     </p>
                     <p>
-                        <input type="submit" class="button button-primary button-large" style="width:100%" value="<?php esc_attr_e('Verify', 'advanced-login-guardian'); ?>">
+                        <input type="submit" class="button button-primary button-large" style="width:100%" value="<?php esc_attr_e('Verify', 'wp-login-guardian'); ?>">
                     </p>
                     <a href="#" class="backup-link" onclick="document.getElementById('alg-backup-form').style.display='block';this.style.display='none';return false;">
-                        <?php _e('Use a backup code instead', 'advanced-login-guardian'); ?>
+                        <?php _e('Use a backup code instead', 'wp-login-guardian'); ?>
                     </a>
                     <div id="alg-backup-form" style="display:none; margin-top:12px;">
                         <p>
-                            <input type="text" name="alg_2fa_backup" placeholder="<?php esc_attr_e('Backup code', 'advanced-login-guardian'); ?>" maxlength="8" style="text-align:center;width:100%;padding:8px;">
+                            <input type="text" name="alg_2fa_backup" placeholder="<?php esc_attr_e('Backup code', 'wp-login-guardian'); ?>" maxlength="8" style="text-align:center;width:100%;padding:8px;">
                         </p>
                         <p>
-                            <input type="submit" class="button" style="width:100%" value="<?php esc_attr_e('Verify Backup Code', 'advanced-login-guardian'); ?>">
+                            <input type="submit" class="button" style="width:100%" value="<?php esc_attr_e('Verify Backup Code', 'wp-login-guardian'); ?>">
                         </p>
                     </div>
                 </form>
@@ -627,37 +627,37 @@ if (!class_exists('ALG_Plugin')) {
             $backup  = get_user_meta($user->ID, "alg_2fa_backup_codes", true);
             $nonce   = wp_create_nonce("alg_2fa_profile_" . $user->ID);
             ?>
-            <h2><?php _e("Two-Factor Authentication", "advanced-login-guardian"); ?></h2>
+            <h2><?php _e("Two-Factor Authentication", "wp-login-guardian"); ?></h2>
             <table class="form-table" id="alg-2fa-profile">
                 <tr>
-                    <th><?php _e("2FA Status", "advanced-login-guardian"); ?></th>
+                    <th><?php _e("2FA Status", "wp-login-guardian"); ?></th>
                     <td>
                         <?php if ($enabled): ?>
-                            <span style="color:#00a32a;font-weight:600"><?php _e("Enabled", "advanced-login-guardian"); ?></span>
-                            <p class="description"><?php _e("Two-factor authentication is active for this account.", "advanced-login-guardian"); ?></p>
+                            <span style="color:#00a32a;font-weight:600"><?php _e("Enabled", "wp-login-guardian"); ?></span>
+                            <p class="description"><?php _e("Two-factor authentication is active for this account.", "wp-login-guardian"); ?></p>
                         <?php else: ?>
-                            <span style="color:#d63638;font-weight:600"><?php _e("Disabled", "advanced-login-guardian"); ?></span>
-                            <p class="description"><?php _e("Set up 2FA to secure this account.", "advanced-login-guardian"); ?></p>
+                            <span style="color:#d63638;font-weight:600"><?php _e("Disabled", "wp-login-guardian"); ?></span>
+                            <p class="description"><?php _e("Set up 2FA to secure this account.", "wp-login-guardian"); ?></p>
                         <?php endif; ?>
                     </td>
                 </tr>
                 <?php if (!$enabled): ?>
                 <tr id="alg-2fa-setup-row">
-                    <th><?php _e("Setup 2FA", "advanced-login-guardian"); ?></th>
+                    <th><?php _e("Setup 2FA", "wp-login-guardian"); ?></th>
                     <td>
-                        <p><?php _e("1. Click the button below to generate a secret key.", "advanced-login-guardian"); ?></p>
-                        <p><?php _e("2. Scan the QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, Authy, etc.).", "advanced-login-guardian"); ?></p>
+                        <p><?php _e("1. Click the button below to generate a secret key.", "wp-login-guardian"); ?></p>
+                        <p><?php _e("2. Scan the QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, Authy, etc.).", "wp-login-guardian"); ?></p>
                         <div id="alg-qr-container" style="margin:12px 0;display:none;">
                             <canvas id="alg-qr-canvas"></canvas>
                             <p style="word-break:break-all;font-size:12px;color:#555;margin-top:8px;">
-                                <?php _e("Or enter this secret manually:", "advanced-login-guardian"); ?>
+                                <?php _e("Or enter this secret manually:", "wp-login-guardian"); ?>
                                 <strong id="alg-secret-display"></strong>
                             </p>
                         </div>
                         <button type="button" class="button" id="alg-gen-secret" data-nonce="<?php echo esc_attr($nonce); ?>" data-user="<?php echo esc_attr($user->ID); ?>">
-                            <?php _e("Generate Secret & QR Code", "advanced-login-guardian"); ?>
+                            <?php _e("Generate Secret & QR Code", "wp-login-guardian"); ?>
                         </button>
-                        <p class="description"><?php _e("After generating, scan the QR code and enter the 6-digit code below to verify.", "advanced-login-guardian"); ?></p>
+                        <p class="description"><?php _e("After generating, scan the QR code and enter the 6-digit code below to verify.", "wp-login-guardian"); ?></p>
                         <div id="alg-verify-row" style="display:none;margin-top:12px;">
                             <p>
                                 <input type="text" id="alg-verify-code" placeholder="000000" maxlength="6" pattern="\d{6}" style="font-size:16px;letter-spacing:2px;padding:4px;text-align:center;">
@@ -665,12 +665,12 @@ if (!class_exists('ALG_Plugin')) {
                                 <input type="hidden" id="alg-backup-plain" value="">
                             </p>
                             <p id="alg-backup-display" style="display:none;">
-                                <strong><?php _e("Backup Codes:", "advanced-login-guardian"); ?></strong><br>
+                                <strong><?php _e("Backup Codes:", "wp-login-guardian"); ?></strong><br>
                                 <code id="alg-backup-codes" style="display:block;margin-top:8px;padding:8px;background:#f6f7f7;border:1px solid #ddd;font-size:13px;line-height:1.8"></code>
-                                <span class="description"><?php _e("Save these codes! Each can be used once to log in if you lose your device.", "advanced-login-guardian"); ?></span>
+                                <span class="description"><?php _e("Save these codes! Each can be used once to log in if you lose your device.", "wp-login-guardian"); ?></span>
                             </p>
                             <button type="button" class="button button-primary" id="alg-enable-2fa" data-nonce="<?php echo esc_attr($nonce); ?>" data-user="<?php echo esc_attr($user->ID); ?>">
-                                <?php _e("Verify & Enable 2FA", "advanced-login-guardian"); ?>
+                                <?php _e("Verify & Enable 2FA", "wp-login-guardian"); ?>
                             </button>
                             <span id="alg-verify-msg" style="margin-left:8px;"></span>
                         </div>
@@ -678,25 +678,25 @@ if (!class_exists('ALG_Plugin')) {
                 </tr>
                 <?php else: ?>
                 <tr>
-                    <th><?php _e("Backup Codes", "advanced-login-guardian"); ?></th>
+                    <th><?php _e("Backup Codes", "wp-login-guardian"); ?></th>
                     <td>
                         <?php
                         $codes_remaining = is_array($backup) ? count($backup) : 0;
-                        echo "<p>" . sprintf(__("%d backup codes remaining.", "advanced-login-guardian"), $codes_remaining) . "</p>";
+                        echo "<p>" . sprintf(__("%d backup codes remaining.", "wp-login-guardian"), $codes_remaining) . "</p>";
                         ?>
                         <button type="button" class="button" id="alg-regen-backup" data-user="<?php echo esc_attr($user->ID); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce("alg_regen_backup_" . $user->ID)); ?>">
-                            <?php _e("Regenerate Backup Codes", "advanced-login-guardian"); ?>
+                            <?php _e("Regenerate Backup Codes", "wp-login-guardian"); ?>
                         </button>
                         <span id="alg-backup-msg"></span>
                     </td>
                 </tr>
                 <tr>
-                    <th><?php _e("Disable 2FA", "advanced-login-guardian"); ?></th>
+                    <th><?php _e("Disable 2FA", "wp-login-guardian"); ?></th>
                     <td>
                         <button type="button" class="button" id="alg-disable-2fa" data-user="<?php echo esc_attr($user->ID); ?>" data-nonce="<?php echo esc_attr($nonce); ?>">
-                            <?php _e("Disable 2FA", "advanced-login-guardian"); ?>
+                            <?php _e("Disable 2FA", "wp-login-guardian"); ?>
                         </button>
-                        <p class="description"><?php _e("This will remove 2FA protection from this account.", "advanced-login-guardian"); ?></p>
+                        <p class="description"><?php _e("This will remove 2FA protection from this account.", "wp-login-guardian"); ?></p>
                     </td>
                 </tr>
                 <?php endif; ?>
@@ -746,39 +746,72 @@ if (!class_exists('ALG_Plugin')) {
 
         private function sanitize_options($opts) {
             $def = $this->default_options();
+            $existing = $this->opts();
+            $merged = array_merge($existing, (array)$opts);
             $san = [];
-            $san['window_sec'] = max(60, intval($opts['window_sec'] ?? $def['window_sec']));
-            $san['max_attempts'] = max(1, intval($opts['max_attempts'] ?? $def['max_attempts']));
-            $san['lockout_sec'] = max(60, intval($opts['lockout_sec'] ?? $def['lockout_sec']));
-            $san['hard_lock_threshold'] = max(5, intval($opts['hard_lock_threshold'] ?? $def['hard_lock_threshold']));
-            $san['notify_email'] = sanitize_email($opts['notify_email'] ?? $def['notify_email']);
-            $san['notify_on_lockout'] = empty($opts['notify_on_lockout']) ? 0 : 1;
-            $san['whitelist_ips'] = trim(wp_kses_post($opts['whitelist_ips'] ?? ''));
-            $san['blacklist_ips'] = trim(wp_kses_post($opts['blacklist_ips'] ?? ''));
-            $san['log_retention_days'] = max(7, intval($opts['log_retention_days'] ?? $def['log_retention_days']));
-            $san['custom_login_msg'] = wp_kses_post($opts['custom_login_msg'] ?? '');
-            $san['login_logo_url'] = esc_url_raw($opts['login_logo_url'] ?? '');
-            $san['login_bg'] = sanitize_hex_color($opts['login_bg'] ?? $def['login_bg']);
-            $san['login_button'] = sanitize_hex_color($opts['login_button'] ?? $def['login_button']);
 
-            // Reporting options
-            $san['enable_abuseipdb'] = empty($opts['enable_abuseipdb']) ? 0 : 1;
-            $san['abuseipdb_api_key'] = sanitize_text_field($opts['abuseipdb_api_key'] ?? '');
-            $san['abuseipdb_categories'] = sanitize_text_field($opts['abuseipdb_categories'] ?? '18,22');
-            $san['enable_spamhaus'] = empty($opts['enable_spamhaus']) ? 0 : 1;
-            $san['spamhaus_api_key'] = sanitize_text_field($opts['spamhaus_api_key'] ?? '');
+            $san['window_sec'] = max(60, intval($merged['window_sec'] ?? $def['window_sec']));
+            $san['max_attempts'] = max(1, intval($merged['max_attempts'] ?? $def['max_attempts']));
+            $san['lockout_sec'] = max(60, intval($merged['lockout_sec'] ?? $def['lockout_sec']));
+            $san['hard_lock_threshold'] = max(5, intval($merged['hard_lock_threshold'] ?? $def['hard_lock_threshold']));
+            $san['notify_email'] = sanitize_email($merged['notify_email'] ?? $def['notify_email']);
+
+            // Rate Tab Context
+            if (isset($opts['window_sec']) || isset($opts['notify_on_lockout'])) {
+                $san['notify_on_lockout'] = empty($opts['notify_on_lockout']) ? 0 : 1;
+            } else {
+                $san['notify_on_lockout'] = empty($existing['notify_on_lockout']) ? 0 : 1;
+            }
+
+            // 2FA Tab Context
+            if (isset($opts['tab_context_2fa']) || isset($opts['2fa_remember_days'])) {
+                $san['2fa_enabled'] = empty($opts['2fa_enabled']) ? 0 : 1;
+                $san['2fa_enforce_roles'] = isset($opts['2fa_enforce_roles']) && is_array($opts['2fa_enforce_roles']) ? array_values(array_map('sanitize_key', $opts['2fa_enforce_roles'])) : [];
+                $san['2fa_remember_days'] = max(1, intval($opts['2fa_remember_days'] ?? $def['2fa_remember_days']));
+            } else {
+                $san['2fa_enabled'] = empty($existing['2fa_enabled']) ? 0 : 1;
+                $san['2fa_enforce_roles'] = $existing['2fa_enforce_roles'] ?? $def['2fa_enforce_roles'];
+                $san['2fa_remember_days'] = intval($existing['2fa_remember_days'] ?? $def['2fa_remember_days']);
+            }
+
+            // Lists Tab Context
+            $san['whitelist_ips'] = trim(wp_kses_post($merged['whitelist_ips'] ?? ''));
+            $san['blacklist_ips'] = trim(wp_kses_post($merged['blacklist_ips'] ?? ''));
+            $san['log_retention_days'] = max(7, intval($merged['log_retention_days'] ?? $def['log_retention_days']));
+
+            // Customizer Tab Context
+            $san['custom_login_msg'] = wp_kses_post($merged['custom_login_msg'] ?? '');
+            $san['login_logo_url'] = esc_url_raw($merged['login_logo_url'] ?? '');
+            $san['login_bg'] = sanitize_hex_color($merged['login_bg'] ?? $def['login_bg']) ?: $def['login_bg'];
+            $san['login_button'] = sanitize_hex_color($merged['login_button'] ?? $def['login_button']) ?: $def['login_button'];
+
+            // Reporting Tab Context
+            if (isset($opts['tab_context_reporting']) || isset($opts['abuseipdb_api_key'])) {
+                $san['enable_abuseipdb'] = empty($opts['enable_abuseipdb']) ? 0 : 1;
+                $san['enable_spamhaus'] = empty($opts['enable_spamhaus']) ? 0 : 1;
+                $san['auto_report_on_lockout'] = empty($opts['auto_report_on_lockout']) ? 0 : 1;
+                $san['auto_report_on_block'] = empty($opts['auto_report_on_block']) ? 0 : 1;
+            } else {
+                $san['enable_abuseipdb'] = empty($existing['enable_abuseipdb']) ? 0 : 1;
+                $san['enable_spamhaus'] = empty($existing['enable_spamhaus']) ? 0 : 1;
+                $san['auto_report_on_lockout'] = empty($existing['auto_report_on_lockout']) ? 0 : 1;
+                $san['auto_report_on_block'] = empty($existing['auto_report_on_block']) ? 0 : 1;
+            }
+
+            $san['abuseipdb_api_key'] = sanitize_text_field($merged['abuseipdb_api_key'] ?? '');
+            $san['abuseipdb_categories'] = sanitize_text_field($merged['abuseipdb_categories'] ?? '18,22');
+            $san['spamhaus_api_key'] = sanitize_text_field($merged['spamhaus_api_key'] ?? '');
             $allowed_threats = ['attack', 'spam', 'bulletproof', 'hijacked-network'];
-            $san['spamhaus_threat_type'] = in_array($opts['spamhaus_threat_type'] ?? '', $allowed_threats, true) ? $opts['spamhaus_threat_type'] : 'attack';
-            $san['default_report_comment'] = sanitize_text_field($opts['default_report_comment'] ?? 'Unauthorized login attempt / brute force attack detected');
-            $san['auto_report_on_lockout'] = empty($opts['auto_report_on_lockout']) ? 0 : 1;
-            $san['auto_report_on_block'] = empty($opts['auto_report_on_block']) ? 0 : 1;
+            $san['spamhaus_threat_type'] = in_array($merged['spamhaus_threat_type'] ?? '', $allowed_threats, true) ? $merged['spamhaus_threat_type'] : 'attack';
+            $san['default_report_comment'] = sanitize_text_field($merged['default_report_comment'] ?? 'Unauthorized login attempt / brute force attack detected');
+
             return $san;
         }
 
         public function render_admin() {
             if (!current_user_can('manage_options')) { return; }
             $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboard';
-            $allowed_tabs = ['dashboard', 'monitor', 'rate', 'custom', 'lists', 'reporting'];
+            $allowed_tabs = ['dashboard', 'monitor', 'rate', '2fa', 'custom', 'lists', 'reporting'];
             if (!in_array($active_tab, $allowed_tabs, true)) {
                 $active_tab = 'dashboard';
             }
@@ -813,6 +846,7 @@ if (!class_exists('ALG_Plugin')) {
                         'dashboard' => ['label' => __('Dashboard', 'wp-login-guardian'), 'icon' => '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>'],
                         'monitor'   => ['label' => __('Activity Monitor', 'wp-login-guardian'), 'icon' => '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>'],
                         'rate'      => ['label' => __('Rate Limiting', 'wp-login-guardian'), 'icon' => '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/>'],
+                        '2fa'       => ['label' => __('2FA Security', 'wp-login-guardian'), 'icon' => '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'],
                         'custom'    => ['label' => __('Login Customization', 'wp-login-guardian'), 'icon' => '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>'],
                         'lists'     => ['label' => __('IP Lists', 'wp-login-guardian'), 'icon' => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'],
                         'reporting' => ['label' => __('API Reporting', 'wp-login-guardian'), 'icon' => '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>'],
@@ -834,6 +868,7 @@ if (!class_exists('ALG_Plugin')) {
                         case 'dashboard': $this->render_dashboard(); break;
                         case 'monitor':   $this->render_monitor(); break;
                         case 'rate':      $this->render_rate_form($opts); break;
+                        case '2fa':       $this->render_2fa_form($opts); break;
                         case 'custom':    $this->render_custom_form($opts); break;
                         case 'lists':     $this->render_lists_form($opts); break;
                         case 'reporting': $this->render_reporting_form($opts); break;
@@ -977,136 +1012,448 @@ if (!class_exists('ALG_Plugin')) {
         }
 
         private function render_rate_form($opts) {
-            echo '<form method="post" action="options.php">';
-            settings_fields('alg_settings');
-            echo '<table class="form-table"><tbody>';
-            $this->number_row('window_sec','Window (seconds)','How long to count attempts.');
-            $this->number_row('max_attempts','Max attempts in window','Lock after this many failures.');
-            $this->number_row('lockout_sec','Lockout (seconds)','How long an IP is locked.');
-            $this->number_row('hard_lock_threshold','24h escalation threshold','Escalate lock when failures exceed this in 24h.');
-            $this->text_row('notify_email','Notify email','Receive lockout notifications.');
-            $this->checkbox_row('notify_on_lockout','Email on lockout');
-            echo '</tbody></table>';
-            submit_button();
-            echo '</form>';
+            ?>
+            <form method="post" action="options.php" class="op-form">
+                <?php settings_fields('alg_settings'); ?>
+                <div class="op-panel">
+                    <div class="op-panel-header">
+                        <div class="op-panel-header-main">
+                            <h2 class="op-panel-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                                <?php esc_html_e('Brute-Force Rate Limiting Engine', 'wp-login-guardian'); ?>
+                            </h2>
+                            <p class="op-panel-subtitle"><?php esc_html_e('Configure failed login thresholds, monitoring windows, lockout duration, and escalation penalties.', 'wp-login-guardian'); ?></p>
+                        </div>
+                    </div>
+                    <div class="op-panel-body" style="padding-top:0;padding-bottom:0;">
+                        <?php
+                        $this->number_row('window_sec', __('Measurement Window', 'wp-login-guardian'), __('Rolling duration over which failed authentication attempts are tracked.', 'wp-login-guardian'), __('seconds', 'wp-login-guardian'), 10, 5);
+                        $this->number_row('max_attempts', __('Max Failed Attempts', 'wp-login-guardian'), __('Maximum allowable authentication failures within the window before triggering a lockout.', 'wp-login-guardian'), '', 1, 1);
+                        $this->number_row('lockout_sec', __('Lockout Duration', 'wp-login-guardian'), __('Duration an offending IP address is barred from attempting login.', 'wp-login-guardian'), __('seconds', 'wp-login-guardian'), 60, 60);
+                        $this->number_row('hard_lock_threshold', __('24-Hour Hard Lock Escalation', 'wp-login-guardian'), __('Escalate lockout duration if an IP accumulates this many failed attempts within 24 hours.', 'wp-login-guardian'), __('attempts', 'wp-login-guardian'), 5, 1);
+                        $this->text_row('notify_email', __('Lockout Notification Email', 'wp-login-guardian'), __('Administrator email address to receive immediate security lockout alerts.', 'wp-login-guardian'), 'admin@example.com');
+                        $this->checkbox_row('notify_on_lockout', __('Email Alerts on Lockout', 'wp-login-guardian'), __('Send instant notification when a client IP is locked out.', 'wp-login-guardian'));
+                        ?>
+                    </div>
+                    <div class="op-panel-footer">
+                        <button type="submit" class="op-btn op-btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <?php esc_html_e('Save Rate Rules', 'wp-login-guardian'); ?>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <?php
+        }
+
+        private function render_2fa_form($opts) {
+            $enforced_roles = (array)($opts['2fa_enforce_roles'] ?? []);
+            $wp_roles = wp_roles();
+            $roles_list = $wp_roles ? $wp_roles->get_names() : [
+                'administrator' => 'Administrator',
+                'editor'        => 'Editor',
+                'author'        => 'Author',
+                'contributor'   => 'Contributor',
+                'subscriber'    => 'Subscriber',
+            ];
+            ?>
+            <form method="post" action="options.php" class="op-form">
+                <?php settings_fields('alg_settings'); ?>
+                <input type="hidden" name="<?php echo esc_attr($this->options_key); ?>[tab_context_2fa]" value="1">
+                <div class="op-panel">
+                    <div class="op-panel-header">
+                        <div class="op-panel-header-main">
+                            <h2 class="op-panel-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                <?php esc_html_e('Two-Factor Authentication (TOTP)', 'wp-login-guardian'); ?>
+                            </h2>
+                            <p class="op-panel-subtitle"><?php esc_html_e('Time-based One-Time Password policies, user roles enforcement, and device persistence.', 'wp-login-guardian'); ?></p>
+                        </div>
+                    </div>
+                    <div class="op-panel-body" style="padding-top:0;padding-bottom:0;">
+                        <?php
+                        $this->checkbox_row('2fa_enabled', __('Enable 2FA Subsystem', 'wp-login-guardian'), __('Permit registered users to bind authenticator apps (Google Auth, 1Password, Authy).', 'wp-login-guardian'));
+                        ?>
+                        <div class="op-settings-row">
+                            <div class="op-settings-label-col">
+                                <span class="op-settings-label"><?php esc_html_e('Mandatory Role Enforcement', 'wp-login-guardian'); ?></span>
+                                <span class="op-help-text"><?php esc_html_e('Users in selected roles will be required to set up 2FA before accessing administrative areas.', 'wp-login-guardian'); ?></span>
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:10px;">
+                                <?php foreach ($roles_list as $role_key => $role_name): 
+                                    $is_checked = in_array($role_key, $enforced_roles, true);
+                                ?>
+                                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                                        <input type="checkbox" name="<?php echo esc_attr($this->options_key); ?>[2fa_enforce_roles][]" value="<?php echo esc_attr($role_key); ?>" <?php checked($is_checked); ?>>
+                                        <span><?php echo esc_html($role_name); ?></span>
+                                        <?php if ($role_key === 'administrator'): ?>
+                                            <span class="op-badge op-badge-warning" style="font-size:10px;padding:2px 6px;"><?php esc_html_e('Recommended', 'wp-login-guardian'); ?></span>
+                                        <?php endif; ?>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <?php
+                        $this->number_row('2fa_remember_days', __('Trusted Device Duration', 'wp-login-guardian'), __('Allow verified browsers to skip 2FA verification for this many days.', 'wp-login-guardian'), __('days', 'wp-login-guardian'), 1, 1);
+                        ?>
+                    </div>
+                    <div class="op-panel-footer">
+                        <button type="submit" class="op-btn op-btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <?php esc_html_e('Save 2FA Policies', 'wp-login-guardian'); ?>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <?php
         }
 
         private function render_custom_form($opts) {
-            echo '<form method="post" action="options.php">';
-            settings_fields('alg_settings');
-            echo '<table class="form-table"><tbody>';
-            $this->text_row('login_logo_url','Login logo URL','SVG/PNG recommended.');
-            $this->text_row('custom_login_msg','Login message (HTML allowed)','Shown above the login form.');
-            $this->text_row('login_bg','Login background color (hex)','');
-            $this->text_row('login_button','Login button color (hex)','');
-            echo '</tbody></table>';
-            submit_button();
-            echo '</form>';
+            ?>
+            <form method="post" action="options.php" class="op-form">
+                <?php settings_fields('alg_settings'); ?>
+                <div class="op-panel">
+                    <div class="op-panel-header">
+                        <div class="op-panel-header-main">
+                            <h2 class="op-panel-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                                <?php esc_html_e('Login Screen Customization', 'wp-login-guardian'); ?>
+                            </h2>
+                            <p class="op-panel-subtitle"><?php esc_html_e('Brand the WordPress wp-login.php screen with custom logos, notices, and color palettes.', 'wp-login-guardian'); ?></p>
+                        </div>
+                    </div>
+                    <div class="op-panel-body" style="padding-top:0;padding-bottom:0;">
+                        <?php
+                        $this->text_row('login_logo_url', __('Login Logo URL', 'wp-login-guardian'), __('Custom brand logo displayed in place of the default WordPress emblem. High-resolution SVG or PNG recommended.', 'wp-login-guardian'), 'https://example.com/logo.svg');
+                        $this->textarea_row('custom_login_msg', __('Custom Login Notice', 'wp-login-guardian'), __('Informational banner message rendered above the username & password login form. Basic HTML permitted.', 'wp-login-guardian'), '<p>Authorized personal only.</p>', 4);
+                        ?>
+                        <div class="op-settings-row">
+                            <div class="op-settings-label-col">
+                                <label class="op-settings-label" for="login_bg"><?php esc_html_e('Background Color', 'wp-login-guardian'); ?></label>
+                                <span class="op-help-text"><?php esc_html_e('Background hue of the wp-login.php authentication view.', 'wp-login-guardian'); ?></span>
+                            </div>
+                            <div style="max-width:320px;width:100%;">
+                                <div class="op-input-group">
+                                    <input type="color" value="<?php echo esc_attr($opts['login_bg'] ?? '#f0f0f0'); ?>" data-color-sync="#login_bg" style="width:42px;height:38px;padding:2px;border:none;border-radius:var(--op-radius-md);cursor:pointer;background:transparent;">
+                                    <input type="text" name="<?php echo esc_attr($this->options_key.'[login_bg]'); ?>" id="login_bg" value="<?php echo esc_attr($opts['login_bg'] ?? '#f0f0f0'); ?>" class="op-input" style="font-family:var(--op-font-mono);">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="op-settings-row">
+                            <div class="op-settings-label-col">
+                                <label class="op-settings-label" for="login_button"><?php esc_html_e('Button Accent Color', 'wp-login-guardian'); ?></label>
+                                <span class="op-help-text"><?php esc_html_e('Primary color for login submission and action buttons.', 'wp-login-guardian'); ?></span>
+                            </div>
+                            <div style="max-width:320px;width:100%;">
+                                <div class="op-input-group">
+                                    <input type="color" value="<?php echo esc_attr($opts['login_button'] ?? '#2271b1'); ?>" data-color-sync="#login_button" style="width:42px;height:38px;padding:2px;border:none;border-radius:var(--op-radius-md);cursor:pointer;background:transparent;">
+                                    <input type="text" name="<?php echo esc_attr($this->options_key.'[login_button]'); ?>" id="login_button" value="<?php echo esc_attr($opts['login_button'] ?? '#2271b1'); ?>" class="op-input" style="font-family:var(--op-font-mono);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="op-panel-footer">
+                        <button type="submit" class="op-btn op-btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <?php esc_html_e('Save Customizations', 'wp-login-guardian'); ?>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <?php
         }
 
         private function render_lists_form($opts) {
-            echo '<form method="post" action="options.php">';
-            settings_fields('alg_settings');
-            echo '<table class="form-table"><tbody>';
-            $this->textarea_row('whitelist_ips','Whitelist IPs / ranges','One per line. Supports wildcards like 10.0.*');
-            $this->textarea_row('blacklist_ips','Blacklist IPs / ranges','One per line. Supports wildcards like 203.0.113.*');
-            $this->number_row('log_retention_days','Log retention (days)','Older entries will be purged.');
-            echo '</tbody></table>';
-            submit_button();
-            echo '</form>';
+            $nonce_block = wp_create_nonce('alg_block');
+            $nonce_unblock = wp_create_nonce('alg_unblock');
+            $nonce_report = wp_create_nonce('alg_report');
+            ?>
+            <form method="post" action="options.php" class="op-form">
+                <?php settings_fields('alg_settings'); ?>
+                <div class="op-grid-2col" style="margin-bottom:var(--op-space-6);">
+                    <!-- Whitelist Panel -->
+                    <div class="op-panel">
+                        <div class="op-panel-header">
+                            <div class="op-panel-header-main">
+                                <h2 class="op-panel-title">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                                    <?php esc_html_e('IP Whitelist (Bypass)', 'wp-login-guardian'); ?>
+                                </h2>
+                                <span class="op-badge op-badge-success"><?php esc_html_e('Allowed', 'wp-login-guardian'); ?></span>
+                            </div>
+                        </div>
+                        <div class="op-panel-body">
+                            <p class="op-help-text" style="margin-top:0;margin-bottom:12px;">
+                                <?php esc_html_e('These IPs and CIDR blocks bypass all rate limiting, lockouts, and 2FA enforcement checks. One entry per line (e.g. 192.168.1.0/24 or 10.0.*).', 'wp-login-guardian'); ?>
+                            </p>
+                            <textarea name="<?php echo esc_attr($this->options_key.'[whitelist_ips]'); ?>" id="whitelist_ips" class="op-textarea" rows="8" placeholder="127.0.0.1&#10;192.168.1.0/24"><?php echo esc_textarea($opts['whitelist_ips'] ?? ''); ?></textarea>
+                        </div>
+                    </div>
 
-            echo '<hr /><h2>'.esc_html__('Quick block/unblock/report','advanced-login-guardian').'</h2>';
-            $nonce = wp_create_nonce('alg_block');
-            echo '<p><input type="text" id="alg-ip" placeholder="'.esc_attr__('IP to block/unblock/report','advanced-login-guardian').'"> ';
-            echo '<button class="button" id="alg-block" data-nonce="'.esc_attr($nonce).'">'.__('Block IP','advanced-login-guardian').'</button> ';
-            echo '<button class="button" id="alg-unblock" data-nonce="'.esc_attr(wp_create_nonce('alg_unblock')).'">'.__('Unblock IP','advanced-login-guardian').'</button> ';
-            echo '<button class="button button-secondary" id="alg-report-quick" data-nonce="'.esc_attr(wp_create_nonce('alg_report')).'">'.__('Report IP','advanced-login-guardian').'</button></p>';
-        }
+                    <!-- Blacklist Panel -->
+                    <div class="op-panel">
+                        <div class="op-panel-header">
+                            <div class="op-panel-header-main">
+                                <h2 class="op-panel-title">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                                    <?php esc_html_e('IP Blacklist (Immediate Block)', 'wp-login-guardian'); ?>
+                                </h2>
+                                <span class="op-badge op-badge-danger"><?php esc_html_e('Barred', 'wp-login-guardian'); ?></span>
+                            </div>
+                        </div>
+                        <div class="op-panel-body">
+                            <p class="op-help-text" style="margin-top:0;margin-bottom:12px;">
+                                <?php esc_html_e('Requests from these IP addresses are terminated instantly before authentication begins. One entry per line (e.g. 203.0.113.0/24 or 198.51.100.*).', 'wp-login-guardian'); ?>
+                            </p>
+                            <textarea name="<?php echo esc_attr($this->options_key.'[blacklist_ips]'); ?>" id="blacklist_ips" class="op-textarea" rows="8" placeholder="203.0.113.50&#10;198.51.100.0/24"><?php echo esc_textarea($opts['blacklist_ips'] ?? ''); ?></textarea>
+                        </div>
+                    </div>
+                </div>
 
-        private function number_row($key, $label, $desc) {
-            $opts = $this->opts();
-            echo '<tr><th scope="row"><label for="'.$key.'">'.esc_html($label).'</label></th><td>';
-            echo '<input name="'.$this->options_key.'['.$key.']" id="'.$key.'" type="number" value="'.esc_attr($opts[$key]).'" class="regular-text">';
-            if ($desc) echo '<p class="description">'.esc_html($desc).'</p>';
-            echo '</td></tr>';
-        }
-        private function text_row($key, $label, $desc) {
-            $opts = $this->opts();
-            echo '<tr><th scope="row"><label for="'.$key.'">'.esc_html($label).'</label></th><td>';
-            echo '<input name="'.$this->options_key.'['.$key.']" id="'.$key.'" type="text" value="'.esc_attr($opts[$key]).'" class="regular-text">';
-            if ($desc) echo '<p class="description">'.esc_html($desc).'</p>';
-            echo '</td></tr>';
-        }
-        private function textarea_row($key, $label, $desc) {
-            $opts = $this->opts();
-            echo '<tr><th scope="row"><label for="'.$key.'">'.esc_html($label).'</label></th><td>';
-            echo '<textarea name="'.$this->options_key.'['.$key.']" id="'.$key.'" class="large-text code" rows="6">'.esc_textarea($opts[$key]).'</textarea>';
-            if ($desc) echo '<p class="description">'.esc_html($desc).'</p>';
-            echo '</td></tr>';
+                <!-- Bottom Panel: Log Retention & Quick Actions -->
+                <div class="op-panel">
+                    <div class="op-panel-header">
+                        <div class="op-panel-header-main">
+                            <h2 class="op-panel-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                <?php esc_html_e('Retention & Quick IP Action Console', 'wp-login-guardian'); ?>
+                            </h2>
+                            <p class="op-panel-subtitle"><?php esc_html_e('Control audit log retention limits and execute immediate blocks or threat reports on any IP.', 'wp-login-guardian'); ?></p>
+                        </div>
+                    </div>
+                    <div class="op-panel-body" style="padding-top:0;padding-bottom:0;">
+                        <?php
+                        $this->number_row('log_retention_days', __('Audit Log Retention', 'wp-login-guardian'), __('Number of days authentication history is retained. Entries older than this period are purged automatically.', 'wp-login-guardian'), __('days', 'wp-login-guardian'), 7, 1);
+                        ?>
+                        <div class="op-settings-row">
+                            <div class="op-settings-label-col">
+                                <label class="op-settings-label" for="alg-ip"><?php esc_html_e('Interactive IP Operations', 'wp-login-guardian'); ?></label>
+                                <span class="op-help-text"><?php esc_html_e('Instantly blacklist, remove, or report a suspicious client IP to global threat networks.', 'wp-login-guardian'); ?></span>
+                            </div>
+                            <div style="max-width:560px;width:100%;">
+                                <div class="op-input-group">
+                                    <input type="text" id="alg-ip" class="op-input" placeholder="e.g. 198.51.100.75" style="font-family:var(--op-font-mono);">
+                                    <button type="button" class="op-btn op-btn-danger" id="alg-block" data-nonce="<?php echo esc_attr($nonce_block); ?>">
+                                        <?php esc_html_e('Block', 'wp-login-guardian'); ?>
+                                    </button>
+                                    <button type="button" class="op-btn op-btn-secondary" id="alg-unblock" data-nonce="<?php echo esc_attr($nonce_unblock); ?>">
+                                        <?php esc_html_e('Unblock', 'wp-login-guardian'); ?>
+                                    </button>
+                                    <button type="button" class="op-btn op-btn-ghost" id="alg-report-quick" data-nonce="<?php echo esc_attr($nonce_report); ?>">
+                                        <?php esc_html_e('Report Threat', 'wp-login-guardian'); ?>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="op-panel-footer">
+                        <button type="submit" class="op-btn op-btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <?php esc_html_e('Save IP Rules', 'wp-login-guardian'); ?>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <?php
         }
 
         private function render_reporting_form($opts) {
-            echo '<form method="post" action="options.php">';
-            settings_fields('alg_settings');
-            echo '<h2>'.esc_html__('AbuseIPDB Integration', 'advanced-login-guardian').'</h2>';
-            echo '<table class="form-table"><tbody>';
-            $this->checkbox_row('enable_abuseipdb', 'Enable AbuseIPDB Auto Reporting', 'Automatically submit offending IP addresses to AbuseIPDB via API.');
-            $this->password_row('abuseipdb_api_key', 'AbuseIPDB API Key', 'Get your API Key from your AbuseIPDB account dashboard.');
-            $this->text_row('abuseipdb_categories', 'AbuseIPDB Category IDs', 'Comma-separated category IDs. Default is 18,22 (18 = Brute-Force, 22 = Web App Attack).');
-            echo '</tbody></table>';
+            ?>
+            <form method="post" action="options.php" class="op-form">
+                <?php settings_fields('alg_settings'); ?>
+                <input type="hidden" name="<?php echo esc_attr($this->options_key); ?>[tab_context_reporting]" value="1">
+                
+                <!-- AbuseIPDB Section -->
+                <div class="op-panel" style="margin-bottom:var(--op-space-6);">
+                    <div class="op-panel-header">
+                        <div class="op-panel-header-main">
+                            <h2 class="op-panel-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                <?php esc_html_e('AbuseIPDB Threat Intelligence', 'wp-login-guardian'); ?>
+                            </h2>
+                            <p class="op-panel-subtitle"><?php esc_html_e('Transmit real-time brute force attacks directly into AbuseIPDB central threat database.', 'wp-login-guardian'); ?></p>
+                        </div>
+                        <span class="op-badge op-badge-info"><?php esc_html_e('API v2', 'wp-login-guardian'); ?></span>
+                    </div>
+                    <div class="op-panel-body" style="padding-top:0;padding-bottom:0;">
+                        <?php
+                        $this->checkbox_row('enable_abuseipdb', __('Enable AbuseIPDB Automated Reporting', 'wp-login-guardian'), __('Automatically push attacking IP signals to AbuseIPDB when lockouts occur.', 'wp-login-guardian'));
+                        $this->password_row('abuseipdb_api_key', __('AbuseIPDB API Key', 'wp-login-guardian'), __('Obtain your personal or organization API key from your AbuseIPDB account dashboard.', 'wp-login-guardian'));
+                        $this->text_row('abuseipdb_categories', __('AbuseIPDB Classification IDs', 'wp-login-guardian'), __('Comma-separated category codes. Default: 18,22 (18 = Brute-Force, 22 = Web App Attack).', 'wp-login-guardian'), '18,22');
+                        ?>
+                    </div>
+                </div>
 
-            echo '<hr /><h2>'.esc_html__('Spamhaus Integration', 'advanced-login-guardian').'</h2>';
-            echo '<table class="form-table"><tbody>';
-            $this->checkbox_row('enable_spamhaus', 'Enable Spamhaus Auto Reporting', 'Automatically report IP signals to Spamhaus via API.');
-            $this->password_row('spamhaus_api_key', 'Spamhaus API Token', 'Your Spamhaus API Token or Key.');
-            $this->select_row('spamhaus_threat_type', 'Spamhaus Threat Type', [
-                'attack'           => 'Attack (Login Brute Force / Web Attack)',
-                'spam'             => 'Spam',
-                'bulletproof'      => 'Bulletproof Hosting',
-                'hijacked-network' => 'Hijacked Network',
-            ], 'Threat type code for IP submission from Spamhaus API docs.');
-            echo '</tbody></table>';
+                <!-- Spamhaus Section -->
+                <div class="op-panel" style="margin-bottom:var(--op-space-6);">
+                    <div class="op-panel-header">
+                        <div class="op-panel-header-main">
+                            <h2 class="op-panel-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                <?php esc_html_e('Spamhaus Intelligence Integration', 'wp-login-guardian'); ?>
+                            </h2>
+                            <p class="op-panel-subtitle"><?php esc_html_e('Collaborate with Spamhaus Project intelligence networks by dispatching authenticated threat signals.', 'wp-login-guardian'); ?></p>
+                        </div>
+                        <span class="op-badge op-badge-info"><?php esc_html_e('Enterprise', 'wp-login-guardian'); ?></span>
+                    </div>
+                    <div class="op-panel-body" style="padding-top:0;padding-bottom:0;">
+                        <?php
+                        $this->checkbox_row('enable_spamhaus', __('Enable Spamhaus Signal Transmission', 'wp-login-guardian'), __('Transmit bad reputation IP signals to Spamhaus API.', 'wp-login-guardian'));
+                        $this->password_row('spamhaus_api_key', __('Spamhaus API Token', 'wp-login-guardian'), __('Access token provisioned from your Spamhaus intelligence account.', 'wp-login-guardian'));
+                        $this->select_row('spamhaus_threat_type', __('Spamhaus Threat Classification', 'wp-login-guardian'), [
+                            'attack'           => __('Attack (Login Brute Force / Web Attack)', 'wp-login-guardian'),
+                            'spam'             => __('Spam', 'wp-login-guardian'),
+                            'bulletproof'      => __('Bulletproof Hosting', 'wp-login-guardian'),
+                            'hijacked-network' => __('Hijacked Network', 'wp-login-guardian'),
+                        ], __('Threat category transmitted to Spamhaus API endpoint.', 'wp-login-guardian'));
+                        ?>
+                    </div>
+                </div>
 
-            echo '<hr /><h2>'.esc_html__('Default Comment & Triggers', 'advanced-login-guardian').'</h2>';
-            echo '<table class="form-table"><tbody>';
-            $this->text_row('default_report_comment', 'Default Report Comment', 'Default comment included with automated and manual IP reports.');
-            $this->checkbox_row('auto_report_on_lockout', 'Auto Report on Lockout', 'Automatically trigger IP report when an IP reaches maximum failed login attempts.');
-            $this->checkbox_row('auto_report_on_block', 'Auto Report on Manual/Blacklist Block', 'Automatically trigger IP report when an IP is added to the blacklist or manually blocked.');
-            echo '</tbody></table>';
+                <!-- Triggers & Comments Section -->
+                <div class="op-panel">
+                    <div class="op-panel-header">
+                        <div class="op-panel-header-main">
+                            <h2 class="op-panel-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                <?php esc_html_e('Automated Triggers & Submission Defaults', 'wp-login-guardian'); ?>
+                            </h2>
+                            <p class="op-panel-subtitle"><?php esc_html_e('Configure conditions under which external threat reports are submitted automatically.', 'wp-login-guardian'); ?></p>
+                        </div>
+                    </div>
+                    <div class="op-panel-body" style="padding-top:0;padding-bottom:0;">
+                        <?php
+                        $this->text_row('default_report_comment', __('Default Telemetry Comment', 'wp-login-guardian'), __('Incident note transmitted with automated and manual threat reports.', 'wp-login-guardian'), 'Unauthorized login attempt / brute force attack detected');
+                        $this->checkbox_row('auto_report_on_lockout', __('Auto-Report on Lockout', 'wp-login-guardian'), __('Immediately dispatch an external threat report when an IP reaches maximum failed login attempts.', 'wp-login-guardian'));
+                        $this->checkbox_row('auto_report_on_block', __('Auto-Report on Blacklist Addition', 'wp-login-guardian'), __('Dispatch an external threat report whenever an IP is added to the permanent blacklist.', 'wp-login-guardian'));
+                        ?>
+                    </div>
+                    <div class="op-panel-footer">
+                        <button type="submit" class="op-btn op-btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <?php esc_html_e('Save API Credentials', 'wp-login-guardian'); ?>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <?php
+        }
 
-            submit_button();
-            echo '</form>';
+        private function number_row($key, $label, $desc = '', $addon = '', $min = 0, $step = 1) {
+            $opts = $this->opts();
+            $val = esc_attr($opts[$key] ?? 0);
+            ?>
+            <div class="op-settings-row">
+                <div class="op-settings-label-col">
+                    <label class="op-settings-label" for="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></label>
+                    <?php if ($desc): ?><span class="op-help-text"><?php echo esc_html($desc); ?></span><?php endif; ?>
+                </div>
+                <div style="max-width:340px;width:100%;">
+                    <?php if ($addon): ?>
+                        <div class="op-input-group">
+                            <input name="<?php echo esc_attr($this->options_key.'['.$key.']'); ?>" id="<?php echo esc_attr($key); ?>" type="number" min="<?php echo esc_attr($min); ?>" step="<?php echo esc_attr($step); ?>" value="<?php echo $val; ?>" class="op-input">
+                            <span class="op-input-addon"><?php echo esc_html($addon); ?></span>
+                        </div>
+                    <?php else: ?>
+                        <input name="<?php echo esc_attr($this->options_key.'['.$key.']'); ?>" id="<?php echo esc_attr($key); ?>" type="number" min="<?php echo esc_attr($min); ?>" step="<?php echo esc_attr($step); ?>" value="<?php echo $val; ?>" class="op-input">
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php
+        }
+
+        private function text_row($key, $label, $desc = '', $placeholder = '') {
+            $opts = $this->opts();
+            $val = esc_attr($opts[$key] ?? '');
+            ?>
+            <div class="op-settings-row">
+                <div class="op-settings-label-col">
+                    <label class="op-settings-label" for="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></label>
+                    <?php if ($desc): ?><span class="op-help-text"><?php echo esc_html($desc); ?></span><?php endif; ?>
+                </div>
+                <div style="max-width:440px;width:100%;">
+                    <input name="<?php echo esc_attr($this->options_key.'['.$key.']'); ?>" id="<?php echo esc_attr($key); ?>" type="text" value="<?php echo $val; ?>" placeholder="<?php echo esc_attr($placeholder); ?>" class="op-input">
+                </div>
+            </div>
+            <?php
+        }
+
+        private function textarea_row($key, $label, $desc = '', $placeholder = '', $rows = 6) {
+            $opts = $this->opts();
+            $val = esc_textarea($opts[$key] ?? '');
+            ?>
+            <div class="op-settings-row">
+                <div class="op-settings-label-col">
+                    <label class="op-settings-label" for="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></label>
+                    <?php if ($desc): ?><span class="op-help-text"><?php echo esc_html($desc); ?></span><?php endif; ?>
+                </div>
+                <div style="width:100%;">
+                    <textarea name="<?php echo esc_attr($this->options_key.'['.$key.']'); ?>" id="<?php echo esc_attr($key); ?>" class="op-textarea" rows="<?php echo esc_attr($rows); ?>" placeholder="<?php echo esc_attr($placeholder); ?>"><?php echo $val; ?></textarea>
+                </div>
+            </div>
+            <?php
         }
 
         private function checkbox_row($key, $label, $desc = '') {
             $opts = $this->opts();
             $checked = !empty($opts[$key]) ? 'checked' : '';
-            echo '<tr><th scope="row"><label for="'.$key.'">'.esc_html($label).'</label></th><td>';
-            echo '<label><input name="'.$this->options_key.'['.$key.']" id="'.$key.'" type="checkbox" value="1" '.$checked.'> '.esc_html($label).'</label>';
-            if ($desc) echo '<p class="description">'.esc_html($desc).'</p>';
-            echo '</td></tr>';
+            ?>
+            <div class="op-settings-row">
+                <div class="op-settings-label-col">
+                    <span class="op-settings-label"><?php echo esc_html($label); ?></span>
+                    <?php if ($desc): ?><span class="op-help-text"><?php echo esc_html($desc); ?></span><?php endif; ?>
+                </div>
+                <div>
+                    <label class="op-switch-label">
+                        <span class="op-switch">
+                            <input name="<?php echo esc_attr($this->options_key.'['.$key.']'); ?>" id="<?php echo esc_attr($key); ?>" type="checkbox" value="1" <?php echo $checked; ?>>
+                            <span class="op-switch-slider"></span>
+                        </span>
+                        <span><?php esc_html_e('Enabled', 'wp-login-guardian'); ?></span>
+                    </label>
+                </div>
+            </div>
+            <?php
         }
 
         private function password_row($key, $label, $desc = '') {
             $opts = $this->opts();
-            echo '<tr><th scope="row"><label for="'.$key.'">'.esc_html($label).'</label></th><td>';
-            echo '<input name="'.$this->options_key.'['.$key.']" id="'.$key.'" type="password" value="'.esc_attr($opts[$key] ?? '').'" class="regular-text" autocomplete="off">';
-            if ($desc) echo '<p class="description">'.esc_html($desc).'</p>';
-            echo '</td></tr>';
+            $val = esc_attr($opts[$key] ?? '');
+            ?>
+            <div class="op-settings-row">
+                <div class="op-settings-label-col">
+                    <label class="op-settings-label" for="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></label>
+                    <?php if ($desc): ?><span class="op-help-text"><?php echo esc_html($desc); ?></span><?php endif; ?>
+                </div>
+                <div style="max-width:440px;width:100%;">
+                    <div class="op-input-group">
+                        <input name="<?php echo esc_attr($this->options_key.'['.$key.']'); ?>" id="<?php echo esc_attr($key); ?>" type="password" value="<?php echo $val; ?>" class="op-input" autocomplete="off">
+                        <button type="button" class="op-btn op-btn-secondary" data-toggle-password="#<?php echo esc_attr($key); ?>"><?php esc_html_e('Show', 'wp-login-guardian'); ?></button>
+                    </div>
+                </div>
+            </div>
+            <?php
         }
 
         private function select_row($key, $label, array $options, $desc = '') {
             $opts = $this->opts();
             $val = $opts[$key] ?? '';
-            echo '<tr><th scope="row"><label for="'.$key.'">'.esc_html($label).'</label></th><td>';
-            echo '<select name="'.$this->options_key.'['.$key.']" id="'.$key.'">';
-            foreach ($options as $opt_val => $opt_label) {
-                $sel = ($val === (string)$opt_val) ? 'selected' : '';
-                echo '<option value="'.esc_attr($opt_val).'" '.$sel.'>'.esc_html($opt_label).'</option>';
-            }
-            echo '</select>';
-            if ($desc) echo '<p class="description">'.esc_html($desc).'</p>';
-            echo '</td></tr>';
+            ?>
+            <div class="op-settings-row">
+                <div class="op-settings-label-col">
+                    <label class="op-settings-label" for="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></label>
+                    <?php if ($desc): ?><span class="op-help-text"><?php echo esc_html($desc); ?></span><?php endif; ?>
+                </div>
+                <div style="max-width:340px;width:100%;">
+                    <select name="<?php echo esc_attr($this->options_key.'['.$key.']'); ?>" id="<?php echo esc_attr($key); ?>" class="op-select">
+                        <?php foreach ($options as $opt_val => $opt_label): ?>
+                            <option value="<?php echo esc_attr($opt_val); ?>" <?php selected($val, (string)$opt_val); ?>><?php echo esc_html($opt_label); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <?php
         }
 
         /* -------------------- API Abuse Reporting -------------------- */
@@ -1153,7 +1500,7 @@ if (!class_exists('ALG_Plugin')) {
                         set_transient($transient, 1, DAY_IN_SECONDS);
                     }
                 } else {
-                    $results['abuseipdb'] = ['success' => false, 'message' => __('Already reported to AbuseIPDB recently.', 'advanced-login-guardian')];
+                    $results['abuseipdb'] = ['success' => false, 'message' => __('Already reported to AbuseIPDB recently.', 'wp-login-guardian')];
                 }
             }
 
@@ -1167,7 +1514,7 @@ if (!class_exists('ALG_Plugin')) {
                         set_transient($transient, 1, DAY_IN_SECONDS);
                     }
                 } else {
-                    $results['spamhaus'] = ['success' => false, 'message' => __('Already reported to Spamhaus recently.', 'advanced-login-guardian')];
+                    $results['spamhaus'] = ['success' => false, 'message' => __('Already reported to Spamhaus recently.', 'wp-login-guardian')];
                 }
             }
 
@@ -1197,12 +1544,12 @@ if (!class_exists('ALG_Plugin')) {
             $body = json_decode($raw_body, true);
 
             if ($code >= 200 && $code < 300) {
-                return ['success' => true, 'message' => __('Successfully reported to AbuseIPDB', 'advanced-login-guardian'), 'data' => $body];
+                return ['success' => true, 'message' => __('Successfully reported to AbuseIPDB', 'wp-login-guardian'), 'data' => $body];
             }
             if ($code === 404) {
-                return ['success' => false, 'message' => __('AbuseIPDB API returned 404 (Not Found). Please check API endpoint or account permissions.', 'advanced-login-guardian')];
+                return ['success' => false, 'message' => __('AbuseIPDB API returned 404 (Not Found). Please check API endpoint or account permissions.', 'wp-login-guardian')];
             }
-            $err_msg = isset($body['errors'][0]['detail']) ? $body['errors'][0]['detail'] : sprintf(__('AbuseIPDB HTTP error %d', 'advanced-login-guardian'), $code);
+            $err_msg = isset($body['errors'][0]['detail']) ? $body['errors'][0]['detail'] : sprintf(__('AbuseIPDB HTTP error %d', 'wp-login-guardian'), $code);
             return ['success' => false, 'message' => $err_msg];
         }
 
@@ -1237,26 +1584,26 @@ if (!class_exists('ALG_Plugin')) {
 
             if ($code >= 200 && $code < 300) {
                 if ($code === 208 || (isset($body['status']) && $body['status'] == 208)) {
-                    return ['success' => true, 'message' => __('Already reported to Spamhaus recently.', 'advanced-login-guardian'), 'data' => $body];
+                    return ['success' => true, 'message' => __('Already reported to Spamhaus recently.', 'wp-login-guardian'), 'data' => $body];
                 }
-                return ['success' => true, 'message' => __('Successfully reported to Spamhaus', 'advanced-login-guardian'), 'data' => $body];
+                return ['success' => true, 'message' => __('Successfully reported to Spamhaus', 'wp-login-guardian'), 'data' => $body];
             }
 
             if ($code === 208 || (isset($body['status']) && $body['status'] == 208)) {
-                return ['success' => true, 'message' => __('Submission already reported to Spamhaus.', 'advanced-login-guardian'), 'data' => $body];
+                return ['success' => true, 'message' => __('Submission already reported to Spamhaus.', 'wp-login-guardian'), 'data' => $body];
             }
             if ($code === 400 || (isset($body['status']) && $body['status'] == 400)) {
-                $msg = isset($body['message']) ? $body['message'] : __('Invalid IP address or request parameters.', 'advanced-login-guardian');
+                $msg = isset($body['message']) ? $body['message'] : __('Invalid IP address or request parameters.', 'wp-login-guardian');
                 return ['success' => false, 'message' => 'Spamhaus API: ' . $msg];
             }
             if ($code === 401 || $code === 403) {
-                return ['success' => false, 'message' => __('Spamhaus API authentication failed. Please verify your API Bearer Token.', 'advanced-login-guardian')];
+                return ['success' => false, 'message' => __('Spamhaus API authentication failed. Please verify your API Bearer Token.', 'wp-login-guardian')];
             }
             if ($code === 404) {
-                return ['success' => false, 'message' => __('Spamhaus API endpoint returned 404 (Not Found).', 'advanced-login-guardian')];
+                return ['success' => false, 'message' => __('Spamhaus API endpoint returned 404 (Not Found).', 'wp-login-guardian')];
             }
 
-            $err_msg = isset($body['message']) ? $body['message'] : (isset($body['error']) ? $body['error'] : sprintf(__('Spamhaus HTTP error %d', 'advanced-login-guardian'), $code));
+            $err_msg = isset($body['message']) ? $body['message'] : (isset($body['error']) ? $body['error'] : sprintf(__('Spamhaus HTTP error %d', 'wp-login-guardian'), $code));
             return ['success' => false, 'message' => $err_msg];
         }
 
