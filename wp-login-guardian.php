@@ -890,8 +890,10 @@ if (!class_exists('ALG_Plugin')) {
                         </div>
                         <span class="op-trend-pill op-trend-up">Normal</span>
                     </div>
-                    <div class="op-card-num"><?php echo esc_html(intval($stats['success'] ?? 0)); ?></div>
-                    <div class="op-card-label"><?php esc_html_e('Successful Logins (24h)', 'wp-login-guardian'); ?></div>
+                    <div class="op-card-content">
+                        <div class="op-card-num"><?php echo esc_html(intval($stats['success'] ?? 0)); ?></div>
+                        <div class="op-card-label"><?php esc_html_e('Successful Logins (24h)', 'wp-login-guardian'); ?></div>
+                    </div>
                 </div>
 
                 <div class="op-card">
@@ -901,8 +903,10 @@ if (!class_exists('ALG_Plugin')) {
                         </div>
                         <span class="op-trend-pill op-trend-neutral">Tracked</span>
                     </div>
-                    <div class="op-card-num"><?php echo esc_html(intval($stats['failed'] ?? 0)); ?></div>
-                    <div class="op-card-label"><?php esc_html_e('Failed Password Attempts', 'wp-login-guardian'); ?></div>
+                    <div class="op-card-content">
+                        <div class="op-card-num"><?php echo esc_html(intval($stats['failed'] ?? 0)); ?></div>
+                        <div class="op-card-label"><?php esc_html_e('Failed Password Attempts', 'wp-login-guardian'); ?></div>
+                    </div>
                 </div>
 
                 <div class="op-card">
@@ -912,8 +916,10 @@ if (!class_exists('ALG_Plugin')) {
                         </div>
                         <span class="op-trend-pill op-trend-down">Mitigated</span>
                     </div>
-                    <div class="op-card-num"><?php echo esc_html(intval($stats['lockout'] ?? 0)); ?></div>
-                    <div class="op-card-label"><?php esc_html_e('Rate Lockouts Enforced', 'wp-login-guardian'); ?></div>
+                    <div class="op-card-content">
+                        <div class="op-card-num"><?php echo esc_html(intval($stats['lockout'] ?? 0)); ?></div>
+                        <div class="op-card-label"><?php esc_html_e('Rate Lockouts Enforced', 'wp-login-guardian'); ?></div>
+                    </div>
                 </div>
 
                 <div class="op-card">
@@ -923,8 +929,10 @@ if (!class_exists('ALG_Plugin')) {
                         </div>
                         <span class="op-badge op-badge-danger">Active</span>
                     </div>
-                    <div class="op-card-num"><?php echo esc_html(intval($stats['blocked'] ?? 0)); ?></div>
-                    <div class="op-card-label"><?php esc_html_e('Blocked Attacks', 'wp-login-guardian'); ?></div>
+                    <div class="op-card-content">
+                        <div class="op-card-num"><?php echo esc_html(intval($stats['blocked'] ?? 0)); ?></div>
+                        <div class="op-card-label"><?php esc_html_e('Blocked Attacks', 'wp-login-guardian'); ?></div>
+                    </div>
                 </div>
             </div>
 

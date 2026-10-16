@@ -371,11 +371,16 @@ body.op-theme-dark {
     background: var(--op-bg-surface);
     border: 1px solid var(--op-border-subtle);
     border-radius: var(--op-radius-lg);
-    padding: 18px 20px;
+    padding: 20px 22px;
     box-shadow: var(--op-shadow-sm);
     position: relative;
     overflow: hidden;
-    transition: transform var(--op-transition-fast), box-shadow var(--op-transition-fast);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 140px;
+    box-sizing: border-box;
+    transition: transform var(--op-transition-fast), box-shadow var(--op-transition-fast), border-color var(--op-transition-fast);
 }
 
 .op-card:hover {
@@ -387,8 +392,9 @@ body.op-theme-dark {
 .op-card-top {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-block-end: 10px;
+    align-items: center;
+    margin-block-end: 14px;
+    width: 100%;
 }
 
 .op-card-icon {
@@ -400,6 +406,7 @@ body.op-theme-dark {
     border-radius: var(--op-radius-md);
     background: var(--op-bg-subtle);
     color: var(--op-primary-500);
+    flex-shrink: 0;
 }
 
 .op-card-icon svg {
@@ -407,15 +414,37 @@ body.op-theme-dark {
     height: 20px;
 }
 
+.op-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: auto;
+}
+
+.op-card-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin-top: auto;
+}
+
 .op-card-num {
     font-size: var(--op-font-3xl);
     font-weight: 700;
-    line-height: 1.1;
+    line-height: 1.15;
     color: var(--op-text-primary);
     letter-spacing: -0.02em;
     display: flex;
     align-items: baseline;
     gap: 6px;
+    margin: 0;
+}
+
+.op-card > .op-card-num {
+    margin-top: auto;
+    margin-bottom: 4px;
 }
 
 .op-card-unit {
@@ -428,7 +457,8 @@ body.op-theme-dark {
     font-size: var(--op-font-sm);
     font-weight: 500;
     color: var(--op-text-secondary);
-    margin-block-start: 6px;
+    margin: 0;
+    line-height: 1.35;
 }
 
 .op-trend-pill {
