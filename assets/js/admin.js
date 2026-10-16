@@ -27,10 +27,28 @@
                 const tabs = tabList.querySelectorAll('.op-nav-tab, [role="tab"]');
                 tabs.forEach((tab, index) => {
                     tab.addEventListener('click', (e) => {
-                        const targetId = tab.getAttribute('data-tab-target') || tab.getAttribute('aria-controls') || tab.getAttribute('href');
-                        if (!targetId || targetId === '#' || !document.querySelector(targetId)) return;
-                        e.preventDefault();
-                        this.activateTab(tabList, tab, targetId);
+                        const explicitTarget = tab.getAttribute('data-tab-target') || tab.getAttribute('aria-controls');
+                        const href = tab.getAttribute('href') || '';
+
+                        // If this is a server-side navigation link (admin.php or URL query), allow standard navigation
+                        if (href && (href.includes('admin.php') || href.includes('?') || !href.startsWith('#'))) {
+                            return;
+                        }
+
+                        const targetId = explicitTarget || (href.startsWith('#') ? href : '');
+                        if (!targetId || !targetId.startsWith('#')) {
+                            return;
+                        }
+
+                        try {
+                            const targetPanel = document.querySelector(targetId);
+                            if (targetPanel) {
+                                e.preventDefault();
+                                this.activateTab(tabList, tab, targetId);
+                            }
+                        } catch (err) {
+                            // Suppress invalid selector exceptions
+                        }
                     });
 
                     tab.addEventListener('keydown', (e) => {
@@ -49,22 +67,28 @@
         },
 
         activateTab(tabList, activeTab, targetPanelSelector) {
-            const tabs = tabList.querySelectorAll('.op-nav-tab, [role="tab"]');
-            tabs.forEach(t => {
-                t.classList.remove('is-active');
-                t.setAttribute('aria-selected', 'false');
-            });
+            try {
+                const tabs = tabList.querySelectorAll('.op-nav-tab, [role="tab"]');
+                tabs.forEach(t => {
+                    t.classList.remove('is-active');
+                    t.setAttribute('aria-selected', 'false');
+                });
 
-            activeTab.classList.add('is-active');
-            activeTab.setAttribute('aria-selected', 'true');
+                activeTab.classList.add('is-active');
+                activeTab.setAttribute('aria-selected', 'true');
 
-            const container = tabList.closest('.op-wrap') || document;
-            const panels = container.querySelectorAll('.op-tab-content, [role="tabpanel"]');
-            panels.forEach(p => p.classList.remove('is-active'));
+                const container = tabList.closest('.op-wrap') || document;
+                const panels = container.querySelectorAll('.op-tab-content, [role="tabpanel"]');
+                panels.forEach(p => p.classList.remove('is-active'));
 
-            const targetPanel = document.querySelector(targetPanelSelector);
-            if (targetPanel) {
-                targetPanel.classList.add('is-active');
+                if (targetPanelSelector && targetPanelSelector.startsWith('#')) {
+                    const targetPanel = document.querySelector(targetPanelSelector);
+                    if (targetPanel) {
+                        targetPanel.classList.add('is-active');
+                    }
+                }
+            } catch (err) {
+                // Ignore DOM exceptions
             }
         },
 
